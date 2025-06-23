@@ -52,9 +52,7 @@ class ReservasiController extends Controller
     public function store(StoreReservasiRequest $request)
     {
         try {
-            if (Auth::check()) {
-                return redirect()->route('home');
-            }
+            
             $data = $request->validated();
 
             // Handle file upload (jika ada)
@@ -97,7 +95,6 @@ class ReservasiController extends Controller
 
             $reservasi = Reservasi::create($data);
             
-
             // Logika updatePesertaTerdaftar TIDAK dipanggil di sini karena status masih 'pending'.
 
             // --- PERUBAHAN DI SINI UNTUK MENGIRIM ID VIA URL PARAMETER ---
