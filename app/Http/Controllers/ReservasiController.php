@@ -37,9 +37,16 @@ class ReservasiController extends Controller
 
         // Ambil semua paket workshop yang aktif untuk informasi harga di form (opsional, bisa juga diambil dari jadwal)
         $paketWorkshops = PaketWorkshop::active()->get();
-        
 
-        return view('reservasi.create', compact('jadwalWorkshops', 'paketWorkshops'));
+        $user = Auth::User();
+        $name = "";
+        $email = "";
+        if (Auth::check()) {
+            $email = $user->email;
+            $name = $user->name;
+        }
+
+        return view('reservasi.create', compact('jadwalWorkshops', 'paketWorkshops', 'email', 'name'));
     }
 
     /**

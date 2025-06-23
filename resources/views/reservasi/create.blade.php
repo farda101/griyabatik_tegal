@@ -125,7 +125,7 @@
                                 <input type="text" name="nama_pemesan" id="nama_pemesan"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
                                     @error('nama_pemesan') border-red-500 @enderror"
-                                    value="{{ old('nama_pemesan') }}" required maxlength="255" placeholder="Nama lengkap Anda">
+                                    value="{{ old('nama_pemesan', $name) }}" required maxlength="255" placeholder="Nama lengkap Anda">
                                 @error('nama_pemesan')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -136,7 +136,7 @@
                                 <input type="email" name="email_pemesan" id="email_pemesan"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
                                     @error('email_pemesan') border-red-500 @enderror"
-                                    value="{{ old('email_pemesan') }}" required maxlength="255" placeholder="alamatemail@contoh.com">
+                                    value="{{ old('email_pemesan', $email) }}" required maxlength="255" placeholder="alamatemail@contoh.com">
                                 @error('email_pemesan')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -164,6 +164,7 @@
                                 @enderror
                             </div>
 
+                            @guest
                             <div class="mb-5">
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                                 <input type="password" name="password" id="password" rows="3"
@@ -174,6 +175,7 @@
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+                            @endguest
 
                             <div class="mb-5">
                                 <label for="file_permohonan" class="block text-sm font-medium text-gray-700 mb-1">File Permohonan (PDF/DOC/DOCX, Max 2MB, Opsional)</label>
