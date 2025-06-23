@@ -88,6 +88,34 @@
                 </div>
             </div>
         @endif
+<form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+    {{-- Pencarian Nama / Nomor --}}
+    <input type="text" name="search" value="{{ request('search') }}"
+        placeholder="Cari nama atau nomor reservasi"
+        class="form-input w-full sm:w-64 border border-gray-300 rounded-lg shadow-sm" />
+
+    {{-- Filter Tanggal Workshop --}}
+    <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
+        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm"
+        placeholder="Dari tanggal">
+
+    <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
+        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm"
+        placeholder="Sampai tanggal">
+
+    {{-- Status Pembayaran --}}
+    <select name="status" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
+        <option value="">Semua Status</option>
+        <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Lunas</option>
+        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+        <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Gagal</option>
+        <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+    </select>
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+        Terapkan
+    </button>
+</form>
 
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">

@@ -80,6 +80,27 @@
                 </div>
             </div>
         @endif
+<form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+
+    {{-- Search Nama/Kode --}}
+    <input type="text" name="search" value="{{ request('search') }}"
+        class="form-input w-full sm:w-64 border border-gray-300 rounded-lg shadow-sm"
+        placeholder="Cari nama atau kode batik">
+
+    {{-- Tanggal Masuk: Dari --}}
+    <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
+        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm"
+        placeholder="Dari tanggal">
+
+    {{-- Tanggal Masuk: Sampai --}}
+    <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
+        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm"
+        placeholder="Sampai tanggal">
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+        Terapkan
+    </button>
+</form>
 
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">

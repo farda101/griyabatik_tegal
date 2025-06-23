@@ -18,17 +18,41 @@ class JadwalWorkshopController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua jadwal workshop.
      */
-    public function index()
-    {
-        // Ambil semua data jadwal workshop, dengan relasi ke PaketWorkshop, bisa ditambahkan pagination
-        $jadwalWorkshops = JadwalWorkshop::with('paketWorkshop')
-                            ->latest('tanggal') // Urutkan berdasarkan tanggal terbaru
-                            ->latest('jam_mulai') // Lalu jam mulai terbaru
-                            ->paginate(10); // Menampilkan 10 jadwal per halaman
+public function index(Request $request)
+{
+    $query = \App\Models\JadwalWorkshop::with('paketWorkshop');
 
-        // Kirim data ke view
-        return view('admin.jadwal_workshop.index', compact('jadwalWorkshops'));
+    // Search by nama paket atau tanggal
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->whereHas('paketWorkshop', function ($sub) use ($request) {
+                $sub->where('nama_paket', 'like', '%' . $request->search . '%');
+            })->orWhere('tanggal', 'like', '%' . $request->search . '%');
+        });
     }
+
+    // Filter by paket
+    if ($request->filled('paket')) {
+        $query->where('paket_workshop_id', $request->paket);
+    }
+
+    // Filter by status
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    // Sort
+    if ($request->filled('sort_by') && $request->filled('sort_order')) {
+        $query->orderBy($request->sort_by, $request->sort_order);
+    } else {
+        $query->orderBy('tanggal', 'asc');
+    }
+
+    $jadwalWorkshops = $query->paginate(10)->withQueryString();
+    $paketList = \App\Models\PaketWorkshop::pluck('nama_paket', 'id');
+
+    return view('admin.jadwal_workshop.index', compact('jadwalWorkshops', 'paketList'));
+}
 
     /**
      * Show the form for creating a new resource.

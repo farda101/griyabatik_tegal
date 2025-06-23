@@ -16,19 +16,35 @@ class PengrajinController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua pengrajin.
      */
-    public function index()
-    {
-        // Ambil semua data pengrajin, bisa ditambahkan pagination jika data banyak
-        $pengrajins = Pengrajin::latest()->paginate(10); // Menampilkan 10 pengrajin per halaman
+public function index(Request $request)
+{
+    $query = Pengrajin::query();
 
-        // Kirim data ke view
-        return view('admin.pengrajin.index', compact('pengrajins'));
+    // Search
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama_pengrajin', 'like', '%' . $request->search . '%')
+              ->orWhere('kode_pengrajin', 'like', '%' . $request->search . '%');
+        });
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * Menampilkan form untuk membuat pengrajin baru.
-     */
+    // Filter Status
+    if ($request->has('status') && $request->status !== '') {
+        $query->where('is_active', $request->status);
+    }
+
+    // Sorting
+    if ($request->filled('sort_by') && $request->filled('sort_order')) {
+        $query->orderBy($request->sort_by, $request->sort_order);
+    } else {
+        $query->latest(); // default sorting
+    }
+
+    // Pagination with query string
+    $pengrajins = $query->paginate(7)->withQueryString();
+
+    return view('admin.pengrajin.index', compact('pengrajins'));
+}
     public function create()
     {
         return view('admin.pengrajin.create');

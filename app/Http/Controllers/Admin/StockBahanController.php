@@ -16,15 +16,37 @@ class StockBahanController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua stok bahan.
      */
-    public function index()
-    {
-        // Ambil semua data stok bahan, bisa ditambahkan pagination
-        $stockBahans = StockBahan::latest('tanggal_masuk') // Urutkan berdasarkan tanggal masuk terbaru
-                            ->latest('id') // Lalu ID terbaru
-                            ->paginate(10); // Menampilkan 10 item per halaman
+public function index(Request $request)
+{
+    $query = \App\Models\StockBahan::query();
 
-        return view('admin.stock_bahan.index', compact('stockBahans'));
+    // Search
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama_bahan', 'like', '%' . $request->search . '%')
+              ->orWhere('kode_bahan', 'like', '%' . $request->search . '%');
+        });
     }
+
+    // Filter stok rendah
+    if ($request->stok === 'low') {
+        $query->whereColumn('qty_tersedia', '<=', 'qty_masuk')
+              ->where('qty_tersedia', '<=', setting('min_stock_alert_bahan', 10)); // default 10
+    } elseif ($request->stok === 'available') {
+        $query->where('qty_tersedia', '>', 0);
+    }
+
+    // Sort
+    if ($request->filled('sort_by') && $request->filled('sort_order')) {
+        $query->orderBy($request->sort_by, $request->sort_order);
+    } else {
+        $query->latest('tanggal_masuk');
+    }
+
+    $stockBahans = $query->paginate(10)->withQueryString();
+
+    return view('admin.stock_bahan.index', compact('stockBahans'));
+}
 
     /**
      * Show the form for creating a new resource.

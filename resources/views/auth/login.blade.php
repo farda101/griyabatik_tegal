@@ -11,6 +11,14 @@
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
                 <p class="text-gray-600 dark:text-gray-300">Please sign in to your account</p>
             </div>
+            <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                <p class="text-sm text-blue-800">
+                    <strong>Catatan:</strong><br>
+                    Untuk pengguna <span class="font-semibold">klien</span> yang belum memiliki akun, silakan lakukan <a href="{{ route('reservasi.create') }}" class="text-indigo-600 underline font-medium">reservasi workshop</a> terlebih dahulu.<br>
+                    Akun Anda akan dibuat secara otomatis setelah reservasi berhasil.
+                </p>
+            </div>
+
 
             <!-- Login Card -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">

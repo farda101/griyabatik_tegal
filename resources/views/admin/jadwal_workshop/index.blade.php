@@ -69,6 +69,32 @@
                 </div>
             </div>
         @endif
+<form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+    {{-- Search --}}
+<input type="date" name="tanggal" value="{{ request('tanggal') }}"
+    class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm" />
+
+    {{-- Filter Paket --}}
+    <select name="paket" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
+        <option value="">Semua Paket</option>
+        @foreach ($paketList as $id => $nama)
+            <option value="{{ $id }}" {{ request('paket') == $id ? 'selected' : '' }}>
+                {{ $nama }}
+            </option>
+        @endforeach
+    </select>
+
+    {{-- Filter Status --}}
+    <select name="status" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
+        <option value="">Semua Status</option>
+        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Tersedia</option>
+        <option value="full" {{ request('status') == 'full' ? 'selected' : '' }}>Penuh</option>
+        <option value="unavailable" {{ request('status') == 'unavailable' ? 'selected' : '' }}>Tidak Tersedia</option>
+    </select>
+
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Terapkan</button>
+</form>
 
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">

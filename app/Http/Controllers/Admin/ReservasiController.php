@@ -22,16 +22,39 @@ class ReservasiController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua reservasi untuk admin.
      */
-    public function index()
-    {
-        // Ambil semua reservasi dengan eager loading relasi yang diperlukan
-        $reservasis = Reservasi::with(['jadwalWorkshop', 'jadwalWorkshop.paketWorkshop'])
-                                ->latest() // Urutkan dari reservasi terbaru
-                                ->paginate(10); // Paginate 10 per halaman
+public function index(Request $request)
+{
+    $query = \App\Models\Reservasi::with(['jadwalWorkshop.paketWorkshop']);
 
-        return view('admin.reservasi.index', compact('reservasis'));
+    // Pencarian
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama_pemesan', 'like', '%' . $request->search . '%')
+              ->orWhere('nomor_reservasi', 'like', '%' . $request->search . '%');
+        });
     }
 
+    // Filter status pembayaran
+    if ($request->filled('status')) {
+        $query->where('status_pembayaran', $request->status);
+    }
+
+    // Filter tanggal workshop
+    if ($request->filled('tanggal_dari') || $request->filled('tanggal_sampai')) {
+        $query->whereHas('jadwalWorkshop', function ($q) use ($request) {
+            if ($request->filled('tanggal_dari')) {
+                $q->whereDate('tanggal', '>=', $request->tanggal_dari);
+            }
+            if ($request->filled('tanggal_sampai')) {
+                $q->whereDate('tanggal', '<=', $request->tanggal_sampai);
+            }
+        });
+    }
+
+    $reservasis = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+    return view('admin.reservasi.index', compact('reservasis'));
+}
     /**
      * Show the form for creating a new resource.
      * Tidak diperlukan untuk admin karena reservasi dibuat dari sisi publik.

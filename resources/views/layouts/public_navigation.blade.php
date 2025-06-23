@@ -90,13 +90,6 @@
 
             {{-- Tombol Daftar Sekarang (Desktop) --}}
             <div class="hidden lg:flex items-center space-x-4">
-                <a href="{{ route('reservasi.create') }}" 
-                   class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Daftar Sekarang
-                </a>
                 
                 {{-- Optional Login Button (Uncomment to enable) --}}
                 @if (Route::has('login'))
@@ -105,7 +98,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                         </svg>
-                        Admin
+                        Login
                     </a>
                 @endif
             </div>

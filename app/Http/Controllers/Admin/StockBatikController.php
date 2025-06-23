@@ -22,15 +22,33 @@ class StockBatikController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua stok batik.
      */
-    public function index()
-    {
-        $stockBatiks = StockBatik::with('pengrajin')
-                            ->latest('tanggal_masuk')
-                            ->latest('id')
-                            ->paginate(10);
+public function index(Request $request)
+{
+    $query = \App\Models\StockBatik::with('pengrajin');
 
-        return view('admin.stock_batik.index', compact('stockBatiks'));
+    // Search nama/kode
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama_batik', 'like', '%' . $request->search . '%')
+              ->orWhere('kode_batik', 'like', '%' . $request->search . '%');
+        });
     }
+
+    // Filter tanggal masuk
+    if ($request->filled('tanggal_dari')) {
+        $query->whereDate('tanggal_masuk', '>=', $request->tanggal_dari);
+    }
+    if ($request->filled('tanggal_sampai')) {
+        $query->whereDate('tanggal_masuk', '<=', $request->tanggal_sampai);
+    }
+
+    // Sort default: terbaru
+    $query->orderBy('tanggal_masuk', 'desc');
+
+    $stockBatiks = $query->paginate(10)->withQueryString();
+
+    return view('admin.stock_batik.index', compact('stockBatiks'));
+}
 
     /**
      * Show the form for creating a new resource.
