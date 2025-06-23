@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\JadwalWorkshop; // Untuk mendapatkan jadwal yang tersedia
 use App\Models\PaketWorkshop;  // Untuk mendapatkan detail paket workshop
 use App\Models\Reservasi;      // Model Reservasi
+use App\Models\User;      // Model User
 use App\Http\Requests\StoreReservasiRequest; // Form Request untuk validasi saat menyimpan reservasi
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage; // Untuk upload file
 use Illuminate\Support\Facades\DB;     // Tambahkan baris ini!
 
@@ -33,6 +37,7 @@ class ReservasiController extends Controller
 
         // Ambil semua paket workshop yang aktif untuk informasi harga di form (opsional, bisa juga diambil dari jadwal)
         $paketWorkshops = PaketWorkshop::active()->get();
+        
 
         return view('reservasi.create', compact('jadwalWorkshops', 'paketWorkshops'));
     }
@@ -47,6 +52,9 @@ class ReservasiController extends Controller
     public function store(StoreReservasiRequest $request)
     {
         try {
+            if (Auth::check()) {
+                return redirect()->route('home');
+            }
             $data = $request->validated();
 
             // Handle file upload (jika ada)
@@ -73,7 +81,22 @@ class ReservasiController extends Controller
             // Status pembayaran awal selalu 'pending'
             $data['status_pembayaran'] = 'pending';
 
+            $user = User::create([
+                "name" => $data['nama_pemesan'],
+                "email" => $data['email_pemesan'],
+                "password" => Hash::make($data['password']),
+                "role" => 'client',
+                "is_active" => true
+            ]);
+
+            event(new Registered($user));
+
+            Auth::login($user);
+
+            $data['user_id'] = $user['id'];
+
             $reservasi = Reservasi::create($data);
+            
 
             // Logika updatePesertaTerdaftar TIDAK dipanggil di sini karena status masih 'pending'.
 

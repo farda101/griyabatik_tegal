@@ -25,6 +25,7 @@ class Reservasi extends Model
         'midtrans_response',
         'paid_at',
         'reminder_sent',
+        'user_id'
     ];
 
     protected function casts(): array
@@ -42,6 +43,10 @@ class Reservasi extends Model
     public function jadwalWorkshop()
     {
         return $this->belongsTo(JadwalWorkshop::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
     }
 
     // Scopes

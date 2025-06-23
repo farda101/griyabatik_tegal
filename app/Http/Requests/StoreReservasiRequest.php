@@ -29,6 +29,7 @@ class StoreReservasiRequest extends FormRequest
             'jumlah_peserta' => 'required|integer|min:1',
             'nama_pemesan' => 'required|string|max:255',
             'email_pemesan' => 'required|email|max:255',
+            'password' => 'required|string|min:8',
             'telepon_pemesan' => 'required|string|max:20|regex:/^[0-9\-\(\)\s\+]+$/',
             'alamat_pemesan' => 'nullable|string|max:500',
             'file_permohonan' => 'nullable|file|mimes:pdf,doc,docx|max:2048', // Contoh: PDF/DOC maksimal 2MB

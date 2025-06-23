@@ -165,6 +165,17 @@
                             </div>
 
                             <div class="mb-5">
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input type="password" name="password" id="password" rows="3"
+                                    class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
+                                    @error('alamat_pemesan') border-red-500 @enderror"
+                                    maxlength="500" placeholder="Password">{{ old('password') }}</input>
+                                @error('password')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="mb-5">
                                 <label for="file_permohonan" class="block text-sm font-medium text-gray-700 mb-1">File Permohonan (PDF/DOC/DOCX, Max 2MB, Opsional)</label>
                                 <input type="file" name="file_permohonan" id="file_permohonan"
                                     class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
