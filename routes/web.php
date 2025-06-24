@@ -35,6 +35,10 @@ Route::get('/reservasi/cek-status', [ReservasiController::class, 'showStatusChec
 // Memproses pengecekan status reservasi
 Route::post('/reservasi/status', [ReservasiController::class, 'checkStatus'])->name('reservasi.status');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/reservasi/my', [ReservasiController::class, 'myReservations'])->name('reservasi.my');
+});
+
 // --- Tambahan: Rute untuk menampilkan instruksi pembayaran manual ---
 // Tambahkan parameter {reservasi} untuk Route Model Binding
 Route::get('/reservasi/instruksi-pembayaran/{reservasi}', [ReservasiController::class, 'showPaymentInstructions'])->name('reservasi.payment_instructions');

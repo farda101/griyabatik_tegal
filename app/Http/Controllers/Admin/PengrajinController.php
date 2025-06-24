@@ -20,7 +20,7 @@ public function index(Request $request)
 {
     $query = Pengrajin::query();
 
-    // Search
+    // Search: nama atau kode pengrajin
     if ($request->filled('search')) {
         $query->where(function ($q) use ($request) {
             $q->where('nama_pengrajin', 'like', '%' . $request->search . '%')
@@ -28,20 +28,25 @@ public function index(Request $request)
         });
     }
 
-    // Filter Status
-    if ($request->has('status') && $request->status !== '') {
+    // Filter status aktif
+    if ($request->filled('status')) {
         $query->where('is_active', $request->status);
     }
 
-    // Sorting
-    if ($request->filled('sort_by') && $request->filled('sort_order')) {
-        $query->orderBy($request->sort_by, $request->sort_order);
-    } else {
-        $query->latest(); // default sorting
+    // Sort
+    $sortBy = $request->get('sort_by', 'nama_pengrajin');
+    $sortOrder = $request->get('sort_order', 'asc');
+
+    // Validasi kolom sort
+    $allowedSortBy = ['nama_pengrajin', 'kode_pengrajin'];
+    if (!in_array($sortBy, $allowedSortBy)) {
+        $sortBy = 'nama_pengrajin';
     }
 
-    // Pagination with query string
-    $pengrajins = $query->paginate(7)->withQueryString();
+    // Validasi arah sort
+    $sortOrder = $sortOrder === 'desc' ? 'desc' : 'asc';
+
+    $pengrajins = $query->orderBy($sortBy, $sortOrder)->paginate(10);
 
     return view('admin.pengrajin.index', compact('pengrajins'));
 }

@@ -56,6 +56,35 @@ class ReservasiController extends Controller
      * @param  \App\Http\Requests\StoreReservasiRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
+        /**
+     * Menampilkan daftar reservasi milik user yang sedang login.
+     * Hanya user yang sudah login bisa mengakses.
+     */
+    public function myReservations(Request $request)
+    {
+        $user = auth()->user();
+
+        // Query berdasarkan email user yang sedang login
+        $query = \App\Models\Reservasi::with(['jadwalWorkshop.paketWorkshop'])
+            ->where('email_pemesan', $user->email);
+
+        // Filter (opsional)
+        if ($request->filled('status')) {
+            $query->where('status_pembayaran', $request->status);
+        }
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nomor_reservasi', 'like', '%' . $request->search . '%')
+                  ->orWhere('nama_pemesan', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $reservasis = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        // Tampilkan ke view reservasi/saya.blade.php
+        return view('reservasi.saya', compact('reservasis'));
+    }
+
     public function store(StoreReservasiRequest $request)
     {
         try {

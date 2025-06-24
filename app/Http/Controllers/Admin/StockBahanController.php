@@ -20,7 +20,10 @@ public function index(Request $request)
 {
     $query = \App\Models\StockBahan::query();
 
-    // Search
+    // Ambil batas stok minimum dari setting
+    $minStock = \App\Models\Setting::where('key', 'min_stock_alert_bahan')->value('value') ?? 10;
+
+    // 🔍 Search
     if ($request->filled('search')) {
         $query->where(function ($q) use ($request) {
             $q->where('nama_bahan', 'like', '%' . $request->search . '%')
@@ -28,26 +31,37 @@ public function index(Request $request)
         });
     }
 
-    // Filter stok rendah
+    // 📦 Filter stok
     if ($request->stok === 'low') {
-        $query->whereColumn('qty_tersedia', '<=', 'qty_masuk')
-              ->where('qty_tersedia', '<=', setting('min_stock_alert_bahan', 10)); // default 10
+        $query->where('qty_tersedia', '<', $minStock);
     } elseif ($request->stok === 'available') {
         $query->where('qty_tersedia', '>', 0);
     }
 
-    // Sort
-    if ($request->filled('sort_by') && $request->filled('sort_order')) {
-        $query->orderBy($request->sort_by, $request->sort_order);
-    } else {
-        $query->latest('tanggal_masuk');
+    // 📅 Filter tanggal masuk
+    if ($request->filled('tanggal_dari')) {
+        $query->whereDate('tanggal_masuk', '>=', $request->tanggal_dari);
     }
 
-    $stockBahans = $query->paginate(10)->withQueryString();
+    if ($request->filled('tanggal_sampai')) {
+        $query->whereDate('tanggal_masuk', '<=', $request->tanggal_sampai);
+    }
+
+    // 🔃 Sort
+    $sortBy = $request->get('sort_by', 'tanggal_masuk');
+    $sortOrder = $request->get('sort_order', 'desc');
+
+    $allowedSorts = ['tanggal_masuk', 'nama_bahan'];
+    if (!in_array($sortBy, $allowedSorts)) {
+        $sortBy = 'tanggal_masuk';
+    }
+
+    $sortOrder = $sortOrder === 'asc' ? 'asc' : 'desc';
+
+    $stockBahans = $query->orderBy($sortBy, $sortOrder)->paginate(10)->withQueryString();
 
     return view('admin.stock_bahan.index', compact('stockBahans'));
 }
-
     /**
      * Show the form for creating a new resource.
      * Menampilkan form untuk membuat stok bahan baru.

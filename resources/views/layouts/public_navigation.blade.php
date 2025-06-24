@@ -70,53 +70,76 @@
                     @endif
                 </x-nav-link>
 
-                {{-- Link Cek Reservasi --}}
-                <x-nav-link :href="route('reservasi.status.check.form')" 
-                            :active="request()->routeIs('reservasi.status.check.form')" 
-                            class="relative px-6 py-3 rounded-xl font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
-                    <span class="relative z-10 flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                        {{ __('Cek Reservasi') }}
-                    </span>
-                    {{-- Efek Hover dan Aktif --}}
-                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl opacity-0 group-hover:opacity-100 {{ request()->routeIs('reservasi.status.check.form') ? 'opacity-100' : '' }} transition-opacity duration-300"></div>
-                    @if(request()->routeIs('reservasi.status.check.form'))
-                        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
-                    @endif
-                </x-nav-link>
+                {{-- Conditional Menu: Cek Reservasi atau Reservasi Saya --}}
+                @auth
+                    {{-- Menu untuk User yang Login - Reservasi Saya --}}
+                    <x-nav-link :href="route('reservasi.my')" 
+                                :active="request()->routeIs('reservasi.my')" 
+                                class="relative px-6 py-3 rounded-xl font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+                        <span class="relative z-10 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            {{ __('Reservasi Saya') }}
+                        </span>
+                        {{-- Efek Hover dan Aktif --}}
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl opacity-0 group-hover:opacity-100 {{ request()->routeIs('reservasi.my') ? 'opacity-100' : '' }} transition-opacity duration-300"></div>
+                        @if(request()->routeIs('reservasi.my'))
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
+                        @endif
+                    </x-nav-link>
+                @else
+                    {{-- Menu untuk Guest - Cek Reservasi --}}
+                    <x-nav-link :href="route('reservasi.status.check.form')" 
+                                :active="request()->routeIs('reservasi.status.check.form')" 
+                                class="relative px-6 py-3 rounded-xl font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
+                        <span class="relative z-10 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            {{ __('Cek Reservasi') }}
+                        </span>
+                        {{-- Efek Hover dan Aktif --}}
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl opacity-0 group-hover:opacity-100 {{ request()->routeIs('reservasi.status.check.form') ? 'opacity-100' : '' }} transition-opacity duration-300"></div>
+                        @if(request()->routeIs('reservasi.status.check.form'))
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
+                        @endif
+                    </x-nav-link>
+                @endauth
             </div>
 
-            {{-- Tombol Daftar Sekarang (Desktop) --}}
+            {{-- Authentication Links (Desktop) --}}
             <div class="hidden lg:flex items-center space-x-4">
-                
                 @guest
-                {{-- Optional Login Button (Uncomment to enable) --}}
-                @if (Route::has('login'))
-                    <a href="{{ route('login') }}" 
-                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-indigo-600 transition-colors duration-300">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-                        </svg>
-                        Login
-                    </a>
-                @endif
-                @endguest
-
-                @auth
-                <form action="{{route('logout')}}" method="POST">
-                        @csrf
-                        <button type="submit"
-                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-indigo-600 transition-colors duration-300">
+                    {{-- Login Button untuk Guest --}}
+                    @if (Route::has('login'))
+                        <a href="{{ route('login') }}" 
+                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-indigo-400 transition-colors duration-300">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                             </svg>
+                            Login
+                        </a>
+                    @endif
+                @else
+            {{-- Avatar + Dropdown Logout --}}
+            <div x-data="{ open: false }" class="relative">
+                {{-- Avatar Button --}}
+                <button @click="open = !open" class="w-9 h-9 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold text-sm focus:outline-none shadow hover:brightness-110">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </button>
+
+                {{-- Dropdown Menu --}}
+                <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-36 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 transition-all">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                             Logout
                         </button>
                     </form>
-                @endauth
-
+                </div>
+            </div>
+                @endguest
             </div>
 
             {{-- Tombol Toggle Menu Mobile --}}
@@ -188,18 +211,34 @@
                 {{ __('Edukasi Batik') }}
             </x-responsive-nav-link>
 
-            {{-- Link Cek Reservasi (Mobile) --}}
-            <x-responsive-nav-link :href="route('reservasi.status.check.form')" 
-                                   :active="request()->routeIs('reservasi.status.check.form')"
-                                   class="flex items-center px-4 py-3 rounded-xl font-semibold text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 transition-all duration-300"
-                                   :class="request()->routeIs('reservasi.status.check.form') ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-l-4 border-indigo-400' : ''">
-                <div class="w-8 h-8 bg-gradient-to-r from-indigo-700 to-purple-700 rounded-lg flex items-center justify-center mr-3">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                </div>
-                {{ __('Cek Reservasi') }}
-            </x-responsive-nav-link>
+            {{-- Conditional Menu Mobile: Cek Reservasi atau Reservasi Saya --}}
+            @auth
+                {{-- Menu Mobile untuk User yang Login - Reservasi Saya --}}
+                <x-responsive-nav-link :href="route('reservasi.my')" 
+                                       :active="request()->routeIs('reservasi.my')"
+                                       class="flex items-center px-4 py-3 rounded-xl font-semibold text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 transition-all duration-300"
+                                       :class="request()->routeIs('reservasi.my') ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-l-4 border-indigo-400' : ''">
+                    <div class="w-8 h-8 bg-gradient-to-r from-indigo-700 to-purple-700 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    {{ __('Reservasi Saya') }}
+                </x-responsive-nav-link>
+            @else
+                {{-- Menu Mobile untuk Guest - Cek Reservasi --}}
+                <x-responsive-nav-link :href="route('reservasi.status.check.form')" 
+                                       :active="request()->routeIs('reservasi.status.check.form')"
+                                       class="flex items-center px-4 py-3 rounded-xl font-semibold text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 transition-all duration-300"
+                                       :class="request()->routeIs('reservasi.status.check.form') ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-l-4 border-indigo-400' : ''">
+                    <div class="w-8 h-8 bg-gradient-to-r from-indigo-700 to-purple-700 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    {{ __('Cek Reservasi') }}
+                </x-responsive-nav-link>
+            @endauth
 
             <div class="pt-4 mt-4 border-t border-gray-800">
                 <a href="{{ route('reservasi.create') }}" 
@@ -211,20 +250,51 @@
                 </a>
             </div>
 
-            {{-- Optional Mobile Login --}}
-            @if (Route::has('login'))
-                <div class="pt-2">
-                    <x-responsive-nav-link :href="route('login')"
-                                           class="flex items-center px-4 py-3 rounded-xl font-medium text-gray-300 hover:text-indigo-400 hover:bg-gray-800 transition-all duration-300">
-                        <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-                            </svg>
+            {{-- Authentication Links Mobile --}}
+            <div class="pt-2 space-y-2">
+                @guest
+                    {{-- Login Button Mobile untuk Guest --}}
+                    @if (Route::has('login'))
+                        <x-responsive-nav-link :href="route('login')"
+                                               class="flex items-center px-4 py-3 rounded-xl font-medium text-gray-300 hover:text-indigo-400 hover:bg-gray-800 transition-all duration-300">
+                            <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                </svg>
+                            </div>
+                            {{ __('Login') }}
+                        </x-responsive-nav-link>
+                    @endif
+                @else
+                    {{-- User Info Mobile --}}
+                    <div class="px-4 py-3 bg-gray-800 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold text-white">{{ Auth::user()->name }}</div>
+                                <div class="text-xs text-gray-400">{{ Auth::user()->email }}</div>
+                            </div>
                         </div>
-                        {{ __('Login Admin') }}
-                    </x-responsive-nav-link>
-                </div>
-            @endif
+                    </div>
+                    
+                    {{-- Logout Button Mobile --}}
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="flex items-center w-full px-4 py-3 rounded-xl font-medium text-gray-300 hover:text-red-400 hover:bg-gray-800 transition-all duration-300">
+                            <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                            </div>
+                            {{ __('Logout') }}
+                        </button>
+                    </form>
+                @endguest
+            </div>
         </div>
     </div>
 </nav>

@@ -77,31 +77,33 @@
                 </div>
             </div>
         @endif
-            <form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            {{-- Search --}}
-            <input type="text" name="search" value="{{ request('search') }}"
-                class="form-input w-full sm:w-64 border border-gray-300 rounded-lg shadow-sm"
-                placeholder="Cari nama atau kode bahan">
+<form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+    {{-- Search --}}
+    <input type="text" name="search" value="{{ request('search') }}"
+        class="form-input w-full sm:w-64 border border-gray-300 rounded-lg shadow-sm"
+        placeholder="Cari nama atau kode bahan">
 
-            {{-- Filter stok --}}
-            <select name="stok" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
-                <option value="">Semua Stok</option>
-                <option value="low" {{ request('stok') == 'low' ? 'selected' : '' }}>Stok Rendah</option>
-                <option value="available" {{ request('stok') == 'available' ? 'selected' : '' }}>Stok Tersedia</option>
-            </select>
+    {{-- Filter stok --}}
+    <select name="stok" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
+        <option value="">Semua Stok</option>
+        <option value="low" {{ request('stok') == 'low' ? 'selected' : '' }}>Stok Rendah</option>
+        <option value="available" {{ request('stok') == 'available' ? 'selected' : '' }}>Stok Tersedia</option>
+    </select>
 
-            {{-- Sort --}}
-            <select name="sort_by" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
-                <option value="tanggal_masuk" {{ request('sort_by') == 'tanggal_masuk' ? 'selected' : '' }}>Tanggal Masuk</option>
-                <option value="nama_bahan" {{ request('sort_by') == 'nama_bahan' ? 'selected' : '' }}>Nama Bahan</option>
-            </select>
-            <select name="sort_order" class="form-select w-full sm:w-32 border border-gray-300 rounded-lg shadow-sm">
-                <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Terbaru</option>
-                <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Terlama</option>
-            </select>
+    {{-- Filter Tanggal Masuk --}}
+    <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
+        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
+    <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
+        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
 
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Terapkan</button>
-        </form>
+    {{-- Sort --}}
+    <select name="sort_order" class="form-select w-full sm:w-32 border border-gray-300 rounded-lg shadow-sm">
+        <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Terbaru</option>
+        <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Terlama</option>
+    </select>
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Terapkan</button>
+</form>
 
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">

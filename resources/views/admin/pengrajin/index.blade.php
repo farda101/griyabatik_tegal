@@ -70,30 +70,27 @@
                 </div>
             </div>
         @endif
-                        {{-- Filter & Search --}}
-            <form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                {{-- Pencarian --}}
-                <input type="text" name="search" value="{{ request('search') }}"
-                    class="form-input w-full sm:w-64 border border-gray-300 rounded-lg shadow-sm"
-                    placeholder="Cari nama atau kode pengrajin">
+<form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
 
-                {{-- Status --}}
-                <select name="status" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
-                    <option value="">Semua Status</option>
-                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Aktif</option>
-                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Non-Aktif</option>
-                </select>
+    {{-- Pencarian nama atau kode --}}
+    <input type="text" name="search" value="{{ request('search') }}"
+        placeholder="Cari nama atau kode pengrajin"
+        class="form-input w-full sm:w-64 border border-gray-300 rounded-lg shadow-sm" />
 
-                {{-- Urutkan --}}
-                <select name="sort_order" class="form-select w-full sm:w-32 border border-gray-300 rounded-lg shadow-sm">
-                    <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>A-Z</option>
-                    <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Z-A</option>
-                </select>
+    {{-- Filter status aktif / non-aktif --}}
+    <select name="status" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
+        <option value="">Semua Status</option>
+        <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Aktif</option>
+        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Non-Aktif</option>
+    </select>
 
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Terapkan</button>
-            </form>
 
-        {{-- Main Content Card --}}
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+        Terapkan
+    </button>
+</form>
+
+{{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
