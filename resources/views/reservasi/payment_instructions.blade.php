@@ -126,19 +126,39 @@
                 </div>
 
                 <div class="mt-8 text-center pt-6 border-t border-gray-200">
-                    <a href="{{ route('reservasi.status.check.form') }}"
+                    <button id="pay-button"
                        class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-xl font-semibold text-white uppercase tracking-wider hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 text-base shadow-lg">
                         <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6.01V4a2 2 0 012-2h4a2 2 0 012 2v2M4 16h-.01L4 16m2.003 6.002H18A2 2 0 0020 20V8a2 2 0 00-2-2h-2m-3.997 0h-.002a9.97 9.97 0 00-2.868 1.488l-2.003 2.003a2 2 0 00-.707 1.414V14a2 2 0 002 2h8a2 2 0 002-2v-4a2 2 0 00-2-2h-2V6z"/>
                         </svg>
-                        Cek Status Reservasi Anda
-                    </a>
+                        Bayar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-pMaJz6SNiCcScMbw"></script>
+<script type="text/javascript">
+      document.getElementById('pay-button').onclick = function(){
+        // SnapToken acquired from previous step
+        snap.pay('<?=$snapToken?>', {
+          // Optional
+          onSuccess: function(result){
+            /* You may add your own js here, this is just example */ document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+          },
+          // Optional
+          onPending: function(result){
+            /* You may add your own js here, this is just example */ document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+          },
+          // Optional
+          onError: function(result){
+            /* You may add your own js here, this is just example */ document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+          }
+        });
+      };
+    </script>
 <script>
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(function() {

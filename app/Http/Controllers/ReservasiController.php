@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage; // Untuk upload file
 use Illuminate\Support\Facades\DB;     // Tambahkan baris ini!
 
 class ReservasiController extends Controller
@@ -28,12 +27,12 @@ class ReservasiController extends Controller
         // diurutkan berdasarkan tanggal dan jam terdekat di masa depan.
         // Eager load paketWorkshop untuk menampilkan nama paket.
         $jadwalWorkshops = JadwalWorkshop::with('paketWorkshop')
-                            ->available() // Gunakan scope 'available' dari model JadwalWorkshop
-                            ->where('peserta_terdaftar', '<', DB::raw('max_peserta')) // Perbaikan: Gunakan DB::raw
-                            ->where('tanggal', '>=', now()->toDateString()) // Hanya jadwal hari ini atau di masa depan
-                            ->orderBy('tanggal')
-                            ->orderBy('jam_mulai')
-                            ->get();
+            ->available() // Gunakan scope 'available' dari model JadwalWorkshop
+            ->where('peserta_terdaftar', '<', DB::raw('max_peserta')) // Perbaikan: Gunakan DB::raw
+            ->where('tanggal', '>=', now()->toDateString()) // Hanya jadwal hari ini atau di masa depan
+            ->orderBy('tanggal')
+            ->orderBy('jam_mulai')
+            ->get();
 
         // Ambil semua paket workshop yang aktif untuk informasi harga di form (opsional, bisa juga diambil dari jadwal)
         $paketWorkshops = PaketWorkshop::active()->get();
@@ -88,7 +87,7 @@ class ReservasiController extends Controller
     public function store(StoreReservasiRequest $request)
     {
         try {
-            
+
             $data = $request->validated();
 
             // Handle file upload (jika ada)
@@ -115,22 +114,24 @@ class ReservasiController extends Controller
             // Status pembayaran awal selalu 'pending'
             $data['status_pembayaran'] = 'pending';
 
-            $user = User::create([
-                "name" => $data['nama_pemesan'],
-                "email" => $data['email_pemesan'],
-                "password" => Hash::make($data['password']),
-                "role" => 'client',
-                "is_active" => true
-            ]);
+            if (!Auth::check()) {
+                $user = User::create([
+                    "name" => $data['nama_pemesan'],
+                    "email" => $data['email_pemesan'],
+                    "password" => Hash::make($data['password']),
+                    "role" => 'client',
+                    "is_active" => true
+                ]);
 
-            event(new Registered($user));
+                event(new Registered($user));
 
-            Auth::login($user);
+                Auth::login($user);
+            }
 
-            $data['user_id'] = $user['id'];
+            $data['user_id'] = Auth::User()->id;
 
             $reservasi = Reservasi::create($data);
-            
+
             // Logika updatePesertaTerdaftar TIDAK dipanggil di sini karena status masih 'pending'.
 
             // --- PERUBAHAN DI SINI UNTUK MENGIRIM ID VIA URL PARAMETER ---
@@ -173,8 +174,8 @@ class ReservasiController extends Controller
         $nomorReservasi = strtoupper($request->input('nomor_reservasi'));
 
         $reservasi = Reservasi::with(['jadwalWorkshop', 'jadwalWorkshop.paketWorkshop'])
-                                ->where('nomor_reservasi', $nomorReservasi)
-                                ->first();
+            ->where('nomor_reservasi', $nomorReservasi)
+            ->first();
 
         if (!$reservasi) {
             Session::flash('error', 'Nomor reservasi tidak ditemukan.');
@@ -190,6 +191,16 @@ class ReservasiController extends Controller
     {
         // Objek $reservasi otomatis sudah ditemukan dan di-inject oleh Route Model Binding
         // Jadi tidak perlu lagi cek session atau findOrFail
-        return view('reservasi.payment_instructions', compact('reservasi'));
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$clientKey = config('midtrans.client_key');
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $reservasi['id'],
+                'gross_amount' => $reservasi['total_harga'],
+            )
+        );
+
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        return view('reservasi.payment_instructions', compact('reservasi', 'snapToken'));
     }
 }
