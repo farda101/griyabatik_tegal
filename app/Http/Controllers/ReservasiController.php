@@ -14,9 +14,16 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;     // Tambahkan baris ini!
+use App\Services\MidtransService;
 
 class ReservasiController extends Controller
 {
+    protected $midtransService;
+
+    public function __construct(MidtransService $midtransService)
+    {
+        $this->midtransService = $midtransService;
+    }
     /**
      * Show the form for creating a new reservation.
      * Menampilkan form reservasi untuk publik.
@@ -162,8 +169,6 @@ class ReservasiController extends Controller
     {
         // Objek $reservasi otomatis sudah ditemukan dan di-inject oleh Route Model Binding
         // Jadi tidak perlu lagi cek session atau findOrFail
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$clientKey = config('midtrans.client_key');
         $params = array(
             'transaction_details' => array(
                 'order_id' => $reservasi['id'],
@@ -171,7 +176,18 @@ class ReservasiController extends Controller
             )
         );
 
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        $snapToken = $this->midtransService->createTransaction($params);
+        $reservasi->storeSnapToken($snapToken);
+
         return view('reservasi.payment_instructions', compact('reservasi', 'snapToken'));
+    }
+
+    public function handlePaymentSuccess(Request $request, Reservasi $reservasi) {
+        $midtransResponse = $request->input('data');
+        // $midtransResponse = $request->data;
+        $reservasi->handleReservationPaymentSuccess($midtransResponse);
+        return response()->json(([
+            'redirect'=>route('reservasi.status.check.form')
+        ]));
     }
 }

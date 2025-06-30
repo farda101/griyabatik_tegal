@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\MidtransService;
 use Illuminate\Support\ServiceProvider;
 use Midtrans\Config; // Import Midtrans Config
 
@@ -13,6 +14,9 @@ class MidtransServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+        $this->app->singleton(MidtransService::class, function ($app) {
+            return new MidtransService();
+        });
     }
 
     /**
