@@ -30,6 +30,8 @@ Route::get('/reservasi/daftar', [ReservasiController::class, 'create'])->name('r
 // Memproses pengajuan reservasi
 Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 
+Route::post('/reservasi/payment/{reservasi}', [ReservasiController::class, 'handlePaymentSuccess'])->name('reservasi.handlePaymentSuccess');
+
 // Menampilkan form untuk cek status reservasi
 Route::get('/reservasi/cek-status', [ReservasiController::class, 'showStatusCheckForm'])->name('reservasi.status.check.form');
 // Memproses pengecekan status reservasi

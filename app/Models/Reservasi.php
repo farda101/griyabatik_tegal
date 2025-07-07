@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB; // Import DB Facade
 use Carbon\Carbon;
 
 class Reservasi extends Model
@@ -25,7 +26,8 @@ class Reservasi extends Model
         'midtrans_response',
         'paid_at',
         'reminder_sent',
-        'user_id'
+        'user_id',
+        'midtrans_snap_token'
     ];
 
     protected function casts(): array
@@ -47,6 +49,41 @@ class Reservasi extends Model
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function storeSnapToken($snapToken) {
+        if (!empty($snapToken)) {
+            $this->snap_token = $snapToken;
+            $this->save();
+        }
+    }
+
+    public function storeMidtransResponse($midtransResponse) {
+        if (!empty($midtransResponse)) {
+            $this->update([
+                'midtrans_response' => json_encode($midtransResponse)
+            ]);
+        }
+    }
+
+    public function handleReservationPaymentSuccess($midtransResponse) {
+        DB::beginTransaction();
+
+        $this->setReservasiAsPaid();
+        
+        $this->storeMidtransResponse($midtransResponse);
+
+        $this->jadwalWorkshop->updatePesertaTerdaftar();
+
+        DB::commit();
+
+    }
+
+    public function setReservasiAsPaid() {
+        $this->update([
+            'paid_at' => now(),
+            'status_pembayaran' => 'paid',
+        ]);
     }
 
     // Scopes
