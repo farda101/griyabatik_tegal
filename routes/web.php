@@ -14,7 +14,10 @@ use App\Http\Controllers\Admin\PenggunaanBahanController;
 use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\ArtikelController;
+use App\Http\Controllers\Admin\MotifBatik;
+use App\Http\Controllers\Admin\MotifBatikController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Kasir\LaporanController as KasirLaporanController;
 
@@ -127,7 +130,8 @@ Route::middleware('auth')->group(function () {
             Route::get('{stock_batik}/download-qr', [StockBatikController::class, 'downloadQrCode'])->name('download_qr');
         });
         Route::resource('admin/stock-batik', StockBatikController::class)->names('admin.stock_batik');
-
+        Route::resource(name: 'admin/motif-batik', controller:MotifBatikController::class)->names('motif_batik');
+        
 
         // Rute resource untuk Stok Bahan
         Route::resource('admin/stock-bahan', StockBahanController::class)
