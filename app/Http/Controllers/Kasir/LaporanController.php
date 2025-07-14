@@ -68,8 +68,7 @@ class LaporanController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik'])
-                            ->where('kasir_id', $kasirId);
+        $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik']);
 
         if ($startDate) {
             $query->whereDate('tanggal_penjualan', '>=', $startDate);
