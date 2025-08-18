@@ -98,7 +98,7 @@ class StockBatikController extends Controller
 
             Session::flash('success', 'Stok batik berhasil ditambahkan! Kode Batik: ' . $stockBatik->kode_batik . ' & QR Code berhasil digenerate.');
             return redirect()->route('admin.stock_batik.index');
-        } catch (\Exception $e) {z
+        } catch (\Exception $e){
             Session::flash('error', 'Terjadi kesalahan saat menambahkan stok batik: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
