@@ -94,6 +94,8 @@ Route::middleware('auth')->group(function () {
 
         // --- Tambahan: Rute untuk Export Laporan Penjualan (Admin) ---
         Route::get('/admin/laporan/penjualan/export', [AdminController::class, 'exportPenjualanReport'])->name('admin.laporan.penjualan.export');
+        Route::get('/admin/laporan/reservasi/export', [AdminController::class, 'exportReservasiReport'])->name('admin.reservasi.export');
+        Route::get('/admin/stock/batik/report', [AdminController::class, 'exportStockReport'])->name('admin.stock.report');
 
         // Rute resource untuk Pengrajin
         Route::resource('admin/pengrajin', PengrajinController::class)

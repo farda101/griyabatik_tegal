@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Session; // Pastikan Session diimport
 use Illuminate\Support\Facades\Log;
 
 use App\Exports\PenjualanReportExport; // Tambahkan ini
+use App\Exports\StockBatikExport;
+use App\Exports\ReservasiExport;
 use Maatwebsite\Excel\Facades\Excel; // Tambahkan ini
 
 class AdminController extends Controller
@@ -131,6 +133,36 @@ class AdminController extends Controller
             Log::error('Gagal mengekspor laporan penjualan: ' . $e->getMessage(), ['exception' => $e]);
             Session::flash('error', 'Terjadi kesalahan saat mengekspor laporan penjualan: ' . $e->getMessage());
             return redirect()->back();
+        }
+    }
+
+    public function exportStockReport(Request $request)
+    {
+        $fileName = 'laporan_stok_batik_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return Excel::download(new StockBatikExport, $fileName);
+    }
+    public function exportReservasiReport(Request $request)
+    {
+        try {
+            $date   = $request->input('date');
+            $status = $request->input('status');
+
+            $fileName = 'Laporan_Reservasi';
+
+            if ($date) {
+                $fileName .= '_' . Carbon::parse($date)->format('Ymd');
+            }
+            if ($status) {
+                $fileName .= '_' . ucfirst($status);
+            }
+
+            $fileName .= '_' . Carbon::now()->format('His') . '.xlsx';
+
+            // Oper data filter ke ReservasiExport (lewat constructor)
+            return Excel::download(new ReservasiExport($date, $status), $fileName);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal export: ' . $e->getMessage());
         }
     }
 }

@@ -6,24 +6,33 @@
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {{-- Header Section --}}
         <div class="mb-8">
-            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <div class="flex items-center">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
                     {{-- Ikon Laporan Stok Batik --}}
-                    <div class="bg-gradient-to-r from-blue-500 to-green-500 p-2 rounded-lg mr-3">
+                    <div class="bg-gradient-to-r from-blue-500 to-green-500 p-2 rounded-lg">
                         <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                         </svg>
                     </div>
                     <h1 class="text-3xl font-bold text-gray-900">Laporan Stok Batik</h1>
                 </div>
-                <p class="text-gray-600 mt-2 ml-12">Lihat status stok batik yang tersedia.</p>
+        
+                <a href="{{ route('admin.stock.report') }}"
+                    class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Export Excel
+                </a>
             </div>
+            <p class="text-gray-600 mt-2 ml-3">Lihat status stok batik yang tersedia.</p>
         </div>
+        
 
         {{-- Main Content Card (untuk Tabel) --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+            
             <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">

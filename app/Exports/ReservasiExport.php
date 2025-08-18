@@ -10,20 +10,30 @@ use Carbon\Carbon; // Pastikan Carbon diimport
 
 class ReservasiExport implements FromCollection, WithHeadings, WithMapping
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection()
+    protected $date;
+    protected $status;
+
+    public function __construct($date = null, $status = null)
     {
-        // Ambil semua data Reservasi yang ingin diekspor
-        // Eager load relasi 'jadwalWorkshop' dan 'paketWorkshop' untuk mendapatkan detail yang lengkap
-        return Reservasi::with(['jadwalWorkshop', 'jadwalWorkshop.paketWorkshop'])->get();
+        $this->date = $date;
+        $this->status = $status;
     }
 
-    /**
-     * Menambahkan baris judul (headings) di bagian paling atas file Excel.
-     * @return array
-     */
+    public function collection()
+    {
+        $query = Reservasi::with(['jadwalWorkshop', 'jadwalWorkshop.paketWorkshop']);
+
+        if ($this->date) {
+            $query->whereDate('created_at', Carbon::parse($this->date)->toDateString());
+        }
+
+        if ($this->status) {
+            $query->where('status_pembayaran', $this->status);
+        }
+
+        return $query->get();
+    }
+
     public function headings(): array
     {
         return [
