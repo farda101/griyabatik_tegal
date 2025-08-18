@@ -85,19 +85,51 @@
                 <div class="mb-6">
                     <h3 class="font-bold text-xl text-gray-900 mb-4 pb-2 border-b-2 border-indigo-200 flex items-center">
                         <svg class="h-6 w-6 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Input Produk
+                        Scan QR Code / Input Produk
                     </h3>
+                    
+                    {{-- QR Scanner Section --}}
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                        <div class="text-center">
+                            <button id="startQrScan" type="button"
+                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200 mb-3">
+                                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M12 12h-4.01M7 8h2m1-4H8a4 4 0 00-4 4v1h4V8z"/>
+                                </svg>
+                                <span id="scanButtonText">Scan QR Code</span>
+                            </button>
+                            <div id="qrReader" class="hidden">
+                                <video id="qrVideo" class="w-full max-w-md mx-auto rounded-lg shadow-lg"></video>
+                                <button id="stopQrScan" type="button"
+                                    class="mt-3 inline-flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition duration-200">
+                                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    Stop Scan
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">
+                                <svg class="h-4 w-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Arahkan kamera HP ke QR Code produk batik
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Manual Input Section --}}
                     <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
-                        <input type="text" wire:model.live.debounce.300ms="searchBatik"
-                            placeholder="Scan QR / Masukkan Kode Batik"
+                        <input type="text" wire:model.live.debounce.300ms="searchBatik" id="manualInput"
+                            placeholder="Atau masukkan kode batik manual"
                             class="flex-grow rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
                             @error('searchBatik') border-red-500 @enderror"
                             wire:keydown.enter="searchAndAddBatik"
                         >
                         <input type="number" wire:model.live="qtyToAdd" min="1"
                             class="w-full sm:w-20 rounded-lg border-gray-300 shadow-sm sm:text-sm text-center p-2.5"
+                            placeholder="Qty"
                         >
                         <button wire:click="searchAndAddBatik" type="button"
                             class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200">
@@ -162,7 +194,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="px-6 py-4 text-sm text-gray-500 text-center">
-                                        Keranjang kosong. Tambahkan item.
+                                        Keranjang kosong. Scan QR Code atau tambahkan item manual.
                                     </td>
                                 </tr>
                             @endforelse
@@ -180,31 +212,24 @@
                     Ringkasan Penjualan
                 </h3>
 
-                <div class="mb-4">
-                    <label for="nama_pembeli" class="block text-sm font-medium text-gray-700 mb-1">Nama Pembeli (Opsional)</label>
-                    <input type="text" wire:model.live="nama_pembeli" id="nama_pembeli"
-                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                        placeholder="Nama pembeli">
-                    @error('nama_pembeli')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="telepon_pembeli" class="block text-sm font-medium text-gray-700 mb-1">Telepon Pembeli (Opsional)</label>
-                    <input type="text" wire:model.live="telepon_pembeli" id="telepon_pembeli"
-                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
-                        placeholder="Nomor telepon pembeli">
-                    @error('telepon_pembeli')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
+                {{-- Info Kasir --}}
+                <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-blue-900">Kasir: {{ auth()->user()->name }}</p>
+                            <p class="text-xs text-blue-700">{{ date('d M Y, H:i') }} WIB</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mb-4 p-4 border-y border-gray-200">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-sm font-medium text-gray-700">Total Harga:</span>
                         <span class="text-2xl font-bold text-gray-900">Rp {{ number_format($total_harga, 0, ',', '.') }}</span>
-                        <input type="hidden" wire:model="total_harga" name="total_harga"> {{-- Pastikan modelnya sudah di update --}}
+                        <input type="hidden" wire:model="total_harga" name="total_harga">
                     </div>
                 </div>
 
@@ -245,3 +270,149 @@
         </div>
     </div>
 </div>
+
+{{-- QR Code Scanner Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let qrScanner = null;
+    let isScanning = false;
+    
+    const startButton = document.getElementById('startQrScan');
+    const stopButton = document.getElementById('stopQrScan');
+    const qrReader = document.getElementById('qrReader');
+    const qrVideo = document.getElementById('qrVideo');
+    const scanButtonText = document.getElementById('scanButtonText');
+    const manualInput = document.getElementById('manualInput');
+
+    // Start QR scanning
+    startButton.addEventListener('click', async function() {
+        try {
+            // Request camera permission
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'environment' // Use back camera on mobile
+                } 
+            });
+            
+            qrVideo.srcObject = stream;
+            qrVideo.play();
+            
+            // Show video element and hide start button
+            qrReader.classList.remove('hidden');
+            startButton.style.display = 'none';
+            scanButtonText.textContent = 'Scanning...';
+            isScanning = true;
+
+            // Start QR code detection
+            detectQRCode();
+            
+        } catch (error) {
+            console.error('Error accessing camera:', error);
+            alert('Gagal mengakses kamera. Pastikan browser memiliki izin kamera dan gunakan HTTPS.');
+        }
+    });
+
+    // Stop QR scanning
+    stopButton.addEventListener('click', function() {
+        stopScanning();
+    });
+
+    function stopScanning() {
+        if (qrVideo.srcObject) {
+            const tracks = qrVideo.srcObject.getTracks();
+            tracks.forEach(track => track.stop());
+            qrVideo.srcObject = null;
+        }
+        
+        qrReader.classList.add('hidden');
+        startButton.style.display = 'inline-flex';
+        scanButtonText.textContent = 'Scan QR Code';
+        isScanning = false;
+    }
+
+    // QR Code detection using HTML5 canvas
+    function detectQRCode() {
+        if (!isScanning) return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (qrVideo.readyState === qrVideo.HAVE_ENOUGH_DATA) {
+            canvas.width = qrVideo.videoWidth;
+            canvas.height = qrVideo.videoHeight;
+            ctx.drawImage(qrVideo, 0, 0, canvas.width, canvas.height);
+            
+            try {
+                // Use jsQR library for QR code detection
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                
+                if (code) {
+                    // QR Code detected
+                    console.log('QR Code detected:', code.data);
+                    
+                    // Process the QR code data
+                    processQRCode(code.data);
+                    
+                    // Stop scanning after successful detection
+                    stopScanning();
+                    return;
+                }
+            } catch (error) {
+                console.log('QR detection error:', error);
+            }
+        }
+        
+        // Continue scanning
+        requestAnimationFrame(detectQRCode);
+    }
+
+    function processQRCode(qrData) {
+        try {
+            // Parse QR code data (assuming it's JSON format)
+            const data = JSON.parse(qrData);
+            
+            if (data.kode) {
+                // Set the manual input field with the scanned code
+                manualInput.value = data.kode;
+                manualInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                // Trigger Livewire search
+                @this.set('searchBatik', data.kode);
+                @this.call('searchAndAddBatik');
+                
+                // Show success message
+                showToast('QR Code berhasil dipindai: ' + data.kode, 'success');
+            } else {
+                showToast('Format QR Code tidak valid', 'error');
+            }
+        } catch (error) {
+            // If not JSON, treat as plain text (kode batik)
+            manualInput.value = qrData;
+            manualInput.dispatchEvent(new Event('input', { bubbles: true }));
+            
+            @this.set('searchBatik', qrData);
+            @this.call('searchAndAddBatik');
+            
+            showToast('QR Code berhasil dipindai: ' + qrData, 'success');
+        }
+    }
+
+    function showToast(message, type) {
+        // Simple toast notification
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+});
+</script>
+
+{{-- Include jsQR library for QR code detection --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>

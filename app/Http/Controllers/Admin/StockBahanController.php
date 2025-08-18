@@ -16,52 +16,46 @@ class StockBahanController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua stok bahan.
      */
-public function index(Request $request)
-{
-    $query = \App\Models\StockBahan::query();
+    public function index(Request $request)
+    {
+        $query = \App\Models\StockBahan::query();
 
-    // Ambil batas stok minimum dari setting
-    $minStock = \App\Models\Setting::where('key', 'min_stock_alert_bahan')->value('value') ?? 10;
+        // Ambil batas stok minimum dari setting
+        $minStock = \App\Models\Setting::where('key', 'min_stock_alert_bahan')->value('value') ?? 10;
 
-    // 🔍 Search
-    if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nama_bahan', 'like', '%' . $request->search . '%')
-              ->orWhere('kode_bahan', 'like', '%' . $request->search . '%');
-        });
+        // If you still want server-side filtering options (optional)
+        // You can keep these for additional filtering beyond DataTables search
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_bahan', 'like', '%' . $request->search . '%')
+                    ->orWhere('kode_bahan', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter stok (optional - DataTables will handle this client-side)
+        if ($request->stok === 'low') {
+            $query->where('qty_tersedia', '<', $minStock);
+        } elseif ($request->stok === 'available') {
+            $query->where('qty_tersedia', '>', 0);
+        }
+
+        // Filter tanggal masuk (optional)
+        if ($request->filled('tanggal_dari')) {
+            $query->whereDate('tanggal_masuk', '>=', $request->tanggal_dari);
+        }
+
+        if ($request->filled('tanggal_sampai')) {
+            $query->whereDate('tanggal_masuk', '<=', $request->tanggal_sampai);
+        }
+
+        // Sort default: terbaru
+        $query->orderBy('tanggal_masuk', 'desc');
+
+        // Get all results instead of paginating - DataTables will handle pagination
+        $stockBahans = $query->get();
+
+        return view('admin.stock_bahan.index', compact('stockBahans'));
     }
-
-    // 📦 Filter stok
-    if ($request->stok === 'low') {
-        $query->where('qty_tersedia', '<', $minStock);
-    } elseif ($request->stok === 'available') {
-        $query->where('qty_tersedia', '>', 0);
-    }
-
-    // 📅 Filter tanggal masuk
-    if ($request->filled('tanggal_dari')) {
-        $query->whereDate('tanggal_masuk', '>=', $request->tanggal_dari);
-    }
-
-    if ($request->filled('tanggal_sampai')) {
-        $query->whereDate('tanggal_masuk', '<=', $request->tanggal_sampai);
-    }
-
-    // 🔃 Sort
-    $sortBy = $request->get('sort_by', 'tanggal_masuk');
-    $sortOrder = $request->get('sort_order', 'desc');
-
-    $allowedSorts = ['tanggal_masuk', 'nama_bahan'];
-    if (!in_array($sortBy, $allowedSorts)) {
-        $sortBy = 'tanggal_masuk';
-    }
-
-    $sortOrder = $sortOrder === 'asc' ? 'asc' : 'desc';
-
-    $stockBahans = $query->orderBy($sortBy, $sortOrder)->paginate(10)->withQueryString();
-
-    return view('admin.stock_bahan.index', compact('stockBahans'));
-}
     /**
      * Show the form for creating a new resource.
      * Menampilkan form untuk membuat stok bahan baru.
@@ -94,7 +88,6 @@ public function index(Request $request)
             // Flash message sukses
             Session::flash('success', 'Stok bahan berhasil ditambahkan!');
             return redirect()->route('admin.stock_bahan.index');
-
         } catch (\Exception $e) {
             // Log error untuk debugging
             Log::error('Gagal menyimpan stok bahan: ' . $e->getMessage(), ['exception' => $e, 'request_data' => $request->all()]);
@@ -150,7 +143,6 @@ public function index(Request $request)
             // Flash message sukses
             Session::flash('success', 'Data stok bahan berhasil diperbarui!');
             return redirect()->route('admin.stock_bahan.index');
-
         } catch (\Exception $e) {
             // Log error untuk debugging
             Log::error('Gagal memperbarui stok bahan: ' . $e->getMessage(), ['exception' => $e, 'request_data' => $request->all()]);
@@ -185,7 +177,6 @@ public function index(Request $request)
             // Flash message sukses
             Session::flash('success', 'Stok bahan berhasil dihapus!');
             return redirect()->route('admin.stock_bahan.index');
-
         } catch (\Exception $e) {
             // Log error
             Log::error('Gagal menghapus stok bahan: ' . $e->getMessage(), ['exception' => $e]);

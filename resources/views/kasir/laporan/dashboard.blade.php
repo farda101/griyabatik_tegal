@@ -70,7 +70,7 @@
                                     <i class="fas fa-arrow-right mr-2"></i> Buka POS Penjualan
                                 </a>
                                 <a href="{{ route('kasir.laporan.penjualan.index') }}" class="block text-indigo-600 hover:text-indigo-900 font-medium">
-                                    <i class="fas fa-arrow-right mr-2"></i> Lihat Laporan Penjualan Saya
+                                    <i class="fas fa-arrow-right mr-2"></i> Lihat Laporan Penjualan
                                 </a>
                                 <a href="{{ route('kasir.laporan.stok.index') }}" class="block text-indigo-600 hover:text-indigo-900 font-medium">
                                     <i class="fas fa-arrow-right mr-2"></i> Lihat Laporan Stok

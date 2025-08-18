@@ -22,19 +22,25 @@ class PenjualanReportExport implements FromCollection, WithHeadings, WithMapping
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik']);
 
-        if ($this->startDate) {
-            $query->whereDate('tanggal_penjualan', '>=', $this->startDate);
+        // Only apply date filters if they are provided
+        if ($this->startDate && $this->endDate) {
+            // Both dates provided - filter between dates
+            $query->whereBetween('tanggal_penjualan', [$this->startDate, $this->endDate]);
+        } elseif ($this->startDate) {
+            // Only start date provided - filter from start date onwards
+            $query->where('tanggal_penjualan', '>=', $this->startDate);
+        } elseif ($this->endDate) {
+            // Only end date provided - filter up to end date
+            $query->where('tanggal_penjualan', '<=', $this->endDate);
         }
-
-        if ($this->endDate) {
-            $query->whereDate('tanggal_penjualan', '<=', $this->endDate);
-        }
+        // If neither startDate nor endDate is provided, no date filter is applied
+        // This will return all records in the database
 
         return $query->latest('tanggal_penjualan')->get();
     }

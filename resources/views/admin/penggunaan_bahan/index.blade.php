@@ -3,6 +3,7 @@
 @section('title', 'Manajemen Penggunaan Bahan')
 
 @section('content')
+   
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -73,40 +74,28 @@
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                
+                <table id="penggunaanTable" class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">
-                                No
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Bahan Baku
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Kuantitas Digunakan
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Keperluan
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Tanggal Penggunaan
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Dicatat Oleh
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">
-                                Aksi
-                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">No</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Bahan Baku</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Kuantitas Digunakan</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Keperluan</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tanggal Penggunaan</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Dicatat Oleh</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($penggunaanBahans as $penggunaan)
+                    <tbody>
+                        @foreach ($penggunaanBahans as $penggunaan)
                             <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $loop->iteration + ($penggunaanBahans->currentPage() - 1) * $penggunaanBahans->perPage() }}
+                                    {{ $loop->iteration }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{ $penggunaan->stockBahan->nama_bahan ?? 'N/A' }} (<span class="text-gray-500">{{ $penggunaan->stockBahan->kode_bahan ?? 'N/A' }}</span>)
+                                    {{ $penggunaan->stockBahan->nama_bahan ?? 'N/A' }}
+                                    (<span class="text-gray-500">{{ $penggunaan->stockBahan->kode_bahan ?? 'N/A' }}</span>)
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                     {{ $penggunaan->qty_digunakan }} {{ $penggunaan->stockBahan->satuan ?? '' }}
@@ -121,47 +110,54 @@
                                     {{ $penggunaan->user->name ?? 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('admin.penggunaan_bahan.show', $penggunaan->id) }}" class="text-blue-600 hover:text-blue-900 mr-4 transition duration-150 ease-in-out">
-                                        <svg class="h-5 w-5 inline-block -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                        Detail
-                                    </a>
-                                    <a href="{{ route('admin.penggunaan_bahan.edit', $penggunaan->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-4 transition duration-150 ease-in-out">
-                                        <svg class="h-5 w-5 inline-block -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                        Edit
-                                    </a>
-                                    <form action="{{ route('admin.penggunaan_bahan.destroy', $penggunaan->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus catatan penggunaan bahan ini? Stok bahan akan dikembalikan. Aksi ini tidak dapat dibatalkan!');">
+                                    <a href="{{ route('admin.penggunaan_bahan.show', $penggunaan->id) }}" class="text-blue-600 hover:text-blue-900 mr-2">Detail</a>
+                                    <a href="{{ route('admin.penggunaan_bahan.edit', $penggunaan->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
+                                    <form action="{{ route('admin.penggunaan_bahan.destroy', $penggunaan->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus catatan ini?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150 ease-in-out">
-                                            <svg class="h-5 w-5 inline-block -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
-                                            Hapus
-                                        </button>
+                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
                                     </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    Belum ada catatan penggunaan bahan.
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
-            </div>
-
-            {{-- Pagination --}}
-            <div class="mt-8">
-                {{ $penggunaanBahans->links() }}
             </div>
         </div>
     </div>
 </div>
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+@endpush
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#penggunaanTable').DataTable({
+            responsive: true, // bikin tabel responsif
+            autoWidth: true, // biar nggak maksa width auto
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            scrollX: true, // aktifin scroll horizontal kalau kolom banyak
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                zeroRecords: "Tidak ada data ditemukan",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Data tidak tersedia",
+                paginate: {
+                    first: "Awal",
+                    last: "Akhir",
+                    next: "›",
+                    previous: "‹"
+                }
+            }
+        });
+    });
+    </script>
+    
+@endpush
+
 @endsection

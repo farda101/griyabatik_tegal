@@ -3,17 +3,18 @@
         <div class="max-w-md w-full space-y-8">
             <!-- Header Section -->
             <div class="text-center">
-                <div class="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
-                    <img src="{{ asset('img/griya-batik.png') }}" alt="Batik Logo" class="h-10 w-auto">
+                <div class="mx-auto h-24 w-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
+                    <img src="{{ asset('img/griya-batik.png') }}" alt="Batik Logo" class="h-16 w-auto">
                 </div>
-                <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Masuk Akun Anda</h2>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Silakan login untuk melanjutkan</p>
+                
+                <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Masuk Akun Anda</h2>
+                <p class="mt-1 text-md text-gray-600 dark:text-gray-400">Silakan login untuk melanjutkan</p>
             </div>
 
             <!-- Catatan Pengguna -->
             <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded text-sm text-blue-800">
                 <strong>Catatan:</strong><br>
-                Jika Anda belum memiliki akun, silakan lakukan <a href="{{ route('reservasi.create') }}" class="text-indigo-600 underline font-semibold">reservasi workshop</a> terlebih dahulu. Akun Anda akan dibuat otomatis.
+                Jika Anda belum memiliki akun, silakan lakukan <a href="{{ route('register.user.form') }}" class="text-indigo-600 underline font-semibold">registrasi akun</a> terlebih dahulu. Akun Anda akan dibuat otomatis.
             </div>
 
             <!-- Login Card -->
@@ -25,7 +26,7 @@
 
                     <!-- Email -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                        <label for="email" class="block text-md font-medium text-gray-700 dark:text-gray-300">Email</label>
                         <div class="mt-1 relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +34,7 @@
                                 </svg>
                             </span>
                             <x-text-input id="email" name="email" type="email" required autofocus
-                                class="block w-full pl-10 py-2 border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-sm text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
+                                class="block w-full pl-10 py-2 border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-md text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Masukkan email Anda"
                                 :value="old('email')" />
                         </div>
@@ -42,7 +43,7 @@
 
                     <!-- Password -->
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kata Sandi</label>
+                        <label for="password" class="block text-md font-medium text-gray-700 dark:text-gray-300">Kata Sandi</label>
                         <div class="mt-1 relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +51,7 @@
                                 </svg>
                             </span>
                             <x-text-input id="password" name="password" type="password" required
-                                class="block w-full pl-10 py-2 border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-sm text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
+                                class="block w-full pl-10 py-2 border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-md text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Masukkan kata sandi" />
                         </div>
                         <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-600" />
@@ -60,11 +61,11 @@
                     <div class="flex items-center justify-between">
                         <label class="flex items-center">
                             <input type="checkbox" name="remember" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Ingat saya</span>
+                            <span class="ml-2 text-md text-gray-600 dark:text-gray-400">Ingat saya</span>
                         </label>
 
                         @if (Route::has('password.request'))
-                            <a class="text-sm text-indigo-600 hover:underline" href="{{ route('password.request') }}">
+                            <a class="text-md text-indigo-600 hover:underline" href="{{ route('password.request') }}">
                                 Lupa sandi?
                             </a>
                         @endif
@@ -82,7 +83,7 @@
 
             <!-- Footer -->
             <div class="text-center pt-6">
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p class="text-xs text-gray-500  dark:text-gray-400">
                     &copy; {{ date('Y') }} Griya Batik. Semua Hak Dilindungi.
                 </p>
             </div>

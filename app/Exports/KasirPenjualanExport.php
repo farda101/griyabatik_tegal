@@ -24,12 +24,11 @@ class KasirPenjualanExport implements FromCollection, WithHeadings, WithMapping,
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
-        $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik'])
-                            ->where('kasir_id', $this->kasirId); // Filter berdasarkan ID kasir
+        $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik']);
 
         if ($this->startDate) {
             $query->whereDate('tanggal_penjualan', '>=', $this->startDate);

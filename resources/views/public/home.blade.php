@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Selamat Datang di Workshop Batik Tegalan')
+@section('title', 'Selamat Datang di Workshop Wastra Tegalan')
 
 @section('content')
 <div class="bg-gradient-to-br from-gray-50 via-white to-indigo-50 min-h-screen">
@@ -30,7 +30,7 @@
                             <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
                                 Keindahan
                             </span>
-                            Batik Tegalan
+                            Wastra Tegalan
                         </h1>
 
                         <p class="mt-6 text-xl text-gray-200 max-w-2xl mx-auto lg:mx-0">

@@ -30,21 +30,21 @@ class AdminController extends Controller
 
         $totalPenjualanHariIni = Penjualan::whereDate('tanggal_penjualan', $today)->sum('total_harga');
         $jumlahTransaksiHariIni = Penjualan::whereDate('tanggal_penjualan', $today)->count();
-        
+
         $totalPenjualanBulanIni = Penjualan::whereMonth('tanggal_penjualan', $thisMonth->month)
-                                        ->whereYear('tanggal_penjualan', $thisMonth->year)
-                                        ->sum('total_harga');
+            ->whereYear('tanggal_penjualan', $thisMonth->year)
+            ->sum('total_harga');
         $jumlahTransaksiBulanIni = Penjualan::whereMonth('tanggal_penjualan', $thisMonth->month)
-                                        ->whereYear('tanggal_penjualan', $thisMonth->year)
-                                        ->count();
-        
+            ->whereYear('tanggal_penjualan', $thisMonth->year)
+            ->count();
+
         $totalPenjualanKeseluruhan = Penjualan::sum('total_harga');
         $jumlahTransaksiKeseluruhan = Penjualan::count();
 
         // --- Statistik Reservasi ---
-        $totalReservasiHariIni = Reservasi::whereHas('jadwalWorkshop', function($q) use ($today) {
-                                        $q->whereDate('tanggal', $today);
-                                    })->count();
+        $totalReservasiHariIni = Reservasi::whereHas('jadwalWorkshop', function ($q) use ($today) {
+            $q->whereDate('tanggal', $today);
+        })->count();
         $totalReservasiPending = Reservasi::where('status_pembayaran', 'pending')->count();
         $totalReservasiPaid = Reservasi::where('status_pembayaran', 'paid')->count();
         $totalReservasiExpired = Reservasi::where('status_pembayaran', 'expired')->count();
@@ -97,22 +97,37 @@ class AdminController extends Controller
     public function exportPenjualanReport(Request $request)
     {
         try {
+            // Ambil start_date dan end_date dari request
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
 
+            // Tentukan nama file dengan tanggal
             $fileName = 'laporan_penjualan';
+
             if ($startDate && $endDate) {
+                // Jika ada start_date dan end_date, format nama file dengan rentang tanggal
                 $fileName .= '_' . Carbon::parse($startDate)->format('Ymd') . '_sd_' . Carbon::parse($endDate)->format('Ymd');
             } elseif ($startDate) {
+                // Jika hanya ada start_date, format nama file dengan start_date
                 $fileName .= '_dari_' . Carbon::parse($startDate)->format('Ymd');
             } elseif ($endDate) {
+                // Jika hanya ada end_date, format nama file dengan end_date
                 $fileName .= '_sampai_' . Carbon::parse($endDate)->format('Ymd');
             }
+
+            // Tambahkan waktu untuk membedakan file yang diekspor
             $fileName .= '_' . Carbon::now()->format('His') . '.xlsx';
 
-            return Excel::download(new PenjualanReportExport($startDate, $endDate), $fileName);
+            // Jika tidak ada tanggal yang dipassing, ambil seluruh data penjualan
+            if (!$startDate && !$endDate) {
+                $startDate = null;
+                $endDate = null;
+            }
 
+            // Menggunakan PenjualanReportExport untuk mengekspor laporan
+            return Excel::download(new PenjualanReportExport($startDate, $endDate), $fileName);
         } catch (\Exception $e) {
+            // Jika terjadi kesalahan, log error dan tampilkan pesan kesalahan
             Log::error('Gagal mengekspor laporan penjualan: ' . $e->getMessage(), ['exception' => $e]);
             Session::flash('error', 'Terjadi kesalahan saat mengekspor laporan penjualan: ' . $e->getMessage());
             return redirect()->back();

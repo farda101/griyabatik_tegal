@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="mt-8 border-t border-gray-200 pt-6">
-                    <h3 class="font-semibold text-xl text-gray-800 mb-5 flex items-center">
+                    {{-- <h3 class="font-semibold text-xl text-gray-800 mb-5 flex items-center">
                         <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h10M10 20H7a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v2M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z" />
                         </svg>
@@ -123,7 +123,7 @@
                             Kirim Email ke Admin
                         </a>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="mt-8 text-center pt-6 border-t border-gray-200">
                     @csrf

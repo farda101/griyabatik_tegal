@@ -62,7 +62,7 @@ class ReservasiController extends Controller
      * @param  \App\Http\Requests\StoreReservasiRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-        /**
+    /**
      * Menampilkan daftar reservasi milik user yang sedang login.
      * Hanya user yang sudah login bisa mengakses.
      */
@@ -81,7 +81,7 @@ class ReservasiController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nomor_reservasi', 'like', '%' . $request->search . '%')
-                  ->orWhere('nama_pemesan', 'like', '%' . $request->search . '%');
+                    ->orWhere('nama_pemesan', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -211,12 +211,13 @@ class ReservasiController extends Controller
         return view('reservasi.payment_instructions', compact('reservasi', 'snapToken'));
     }
 
-    public function handlePaymentSuccess(Request $request, Reservasi $reservasi) {
+    public function handlePaymentSuccess(Request $request, Reservasi $reservasi)
+    {
         $midtransResponse = $request->input('data');
         // $midtransResponse = $request->data;
         $reservasi->handleReservationPaymentSuccess($midtransResponse);
         return response()->json(([
-            'redirect'=>route('reservasi.status.check.form')
+            'redirect' => route('reservasi.my')
         ]));
     }
 }

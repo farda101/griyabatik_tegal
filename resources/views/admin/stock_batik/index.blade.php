@@ -34,10 +34,6 @@
                             </svg>
                             Export Excel
                         </a>
-                        {{-- Placeholder Impor Excel (Nanti Diimplementasikan) --}}
-                        {{-- <button class="inline-flex items-center px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200">
-                            Import Excel
-                        </button> --}}
                     </div>
                 </div>
             </div>
@@ -80,32 +76,11 @@
                 </div>
             </div>
         @endif
-<form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-
-    {{-- Search Nama/Kode --}}
-    <input type="text" name="search" value="{{ request('search') }}"
-        class="form-input w-full sm:w-64 border border-gray-300 rounded-lg shadow-sm"
-        placeholder="Cari nama atau kode batik">
-
-    {{-- Tanggal Masuk: Dari --}}
-    <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
-        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm"
-        placeholder="Dari tanggal">
-
-    {{-- Tanggal Masuk: Sampai --}}
-    <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
-        class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm"
-        placeholder="Sampai tanggal">
-
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-        Terapkan
-    </button>
-</form>
 
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table id="stockBatikTable" class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">
@@ -135,10 +110,10 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($stockBatiks as $batik)
+                        @foreach ($stockBatiks as $index => $batik)
                             <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $loop->iteration + ($stockBatiks->currentPage() - 1) * $stockBatiks->perPage() }}
+                                    {{ $index + 1 }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                     {{ $batik->kode_batik }}
@@ -154,13 +129,13 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                     {{ $batik->pengrajin->nama_pengrajin ?? 'N/A' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" data-order="{{ $batik->harga_jual }}">
                                     Rp {{ number_format($batik->harga_jual, 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                     {{ $batik->qty_tersedia }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" data-order="{{ $batik->tanggal_masuk }}">
                                     {{ \Carbon\Carbon::parse($batik->tanggal_masuk)->format('d M Y') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -197,22 +172,123 @@
                                     </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    Belum ada data stok batik.
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
-            </div>
-
-            {{-- Pagination --}}
-            <div class="mt-8">
-                {{ $stockBatiks->links() }}
             </div>
         </div>
     </div>
 </div>
+
+{{-- DataTables CSS --}}
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
+<style>
+    /* Custom DataTables styling */
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        @apply border border-gray-300 rounded-lg px-3 py-2 text-sm;
+    }
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        @apply text-sm text-gray-700;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        @apply px-3 py-2 ml-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        @apply bg-blue-500 text-white border-blue-500 hover:bg-blue-600;
+    }
+</style>
+@endpush
+
+{{-- DataTables JS --}}
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#stockBatikTable').DataTable({
+        // Basic configuration
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+        
+        // Language configuration
+        language: {
+            "sEmptyTable": "Belum ada data stok batik",
+            "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+            "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+            "sInfoFiltered": "(disaring dari _MAX_ total entri)",
+            "sInfoPostFix": "",
+            "sInfoThousands": ".",
+            "sLengthMenu": "Tampilkan _MENU_ entri",
+            "sLoadingRecords": "Sedang memuat...",
+            "sProcessing": "Sedang memproses...",
+            "sSearch": "Cari:",
+            "sSearchPlaceholder": "Cari nama, kode, pengrajin...",
+            "sThousands": ".",
+            "sUrl": "",
+            "sZeroRecords": "Tidak ditemukan data yang sesuai",
+            "oPaginate": {
+                "sFirst": "Pertama",
+                "sLast": "Terakhir",
+                "sNext": "Selanjutnya",
+                "sPrevious": "Sebelumnya"
+            },
+            "oAria": {
+                "sSortAscending": ": aktifkan untuk mengurutkan kolom secara ascending",
+                "sSortDescending": ": aktifkan untuk mengurutkan kolom secara descending"
+            }
+        },
+        
+        // Column configuration
+        columnDefs: [
+            {
+                targets: 0, // No column
+                orderable: false,
+                searchable: false
+            },
+            {
+                targets: -1, // Action column
+                orderable: false,
+                searchable: false
+            },
+            {
+                targets: 4, // Harga Jual column
+                type: 'num'
+            },
+            {
+                targets: 6, // Tanggal Masuk column
+                type: 'date'
+            }
+        ],
+        
+        // Default sorting by date (newest first)
+        order: [[6, 'desc']],
+        
+        // Responsive
+        responsive: true,
+        
+        // Custom search delay
+        searchDelay: 500,
+        
+        // DOM layout
+        dom: '<"flex flex-col sm:flex-row justify-between items-center mb-4"lf>rt<"flex flex-col sm:flex-row justify-between items-center mt-4"ip>',
+        
+        // Custom initialization
+        initComplete: function() {
+            // Add custom styling after initialization
+            $('.dataTables_filter input').attr('placeholder', 'Cari nama, kode, pengrajin...');
+        }
+    });
+});
+</script>
+@endpush
 @endsection

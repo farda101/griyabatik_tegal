@@ -16,7 +16,9 @@ use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\ArtikelController;
 use App\Http\Controllers\Admin\MotifBatik;
 use App\Http\Controllers\Admin\MotifBatikController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Kasir\LaporanController as KasirLaporanController;
@@ -24,12 +26,13 @@ use App\Http\Controllers\Kasir\LaporanController as KasirLaporanController;
 
 // Rute umum yang bisa diakses tanpa login atau untuk user publik
 // PERBAIKAN DI SINI: Arahkan root URL ke PublicController@home
+Route::get('/user/register', [RegisterController::class, 'showRegistrationForm'])->name('register.user.form');
+Route::post('/user/register', [RegisterController::class, 'register'])->name('register.user');
 Route::get('/', [PublicController::class, 'home'])->name('home');
 
 // --- Rute untuk Reservasi (Sisi Publik) ---
 // Rute ini tidak memerlukan autentikasi
 // Menampilkan form pendaftaran reservasi
-Route::get('/reservasi/daftar', [ReservasiController::class, 'create'])->name('reservasi.create');
 // Memproses pengajuan reservasi
 Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 
@@ -77,6 +80,8 @@ Route::get('/dashboard', function () {
 // Grup rute yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
     // Rute untuk pengelolaan profil pengguna
+    Route::get('/reservasi/daftar', [ReservasiController::class, 'create'])->name('reservasi.create'); // ubah ini wajib ada auth
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -130,16 +135,22 @@ Route::middleware('auth')->group(function () {
             Route::get('{stock_batik}/download-qr', [StockBatikController::class, 'downloadQrCode'])->name('download_qr');
         });
         Route::resource('admin/stock-batik', StockBatikController::class)->names('admin.stock_batik');
-        Route::resource(name: 'admin/motif-batik', controller:MotifBatikController::class)->names('motif_batik');
-        
+        Route::resource(name: 'admin/motif-batik', controller: MotifBatikController::class)->names('motif_batik');
+
 
         // Rute resource untuk Stok Bahan
         Route::resource('admin/stock-bahan', StockBahanController::class)
             ->names('admin.stock_bahan');
-        
+
+        // Route untuk DataTables AJAX - harus diatas resource route
+        Route::get('admin/penggunaan-bahan/data', [PenggunaanBahanController::class, 'getData'])
+            ->name('admin.penggunaan_bahan.data');
+
         // Rute resource untuk Penggunaan Bahan
         Route::resource('admin/penggunaan-bahan', PenggunaanBahanController::class)
             ->names('admin.penggunaan_bahan');
+
+
 
         // Rute resource untuk Galeri
         Route::resource('admin/galeri', GaleriController::class)
@@ -165,7 +176,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('admin/artikel/{artikel}/toggle-status', [ArtikelController::class, 'toggleStatus'])
             ->name('admin.artikel.toggleStatus');
 
-        // Tambahkan rute-rute lain khusus superadmin di sini (misal: users management, settings)
+        // user management routte
+        Route::get('user/manage', [UserController::class, 'getAllUser'])->name('admin.manage.user');
+        Route::put('user/{id}/is-active', [UserController::class, 'updateStatus'])->name('admin.manage.is_active');
     });
 
     // --- Rute untuk Kasir Interface (Kasir & Superadmin) ---
@@ -176,17 +189,17 @@ Route::middleware('auth')->group(function () {
         // Rute untuk Sistem POS Kasir (Livewire Component)
         Route::get('/kasir/pos', PosPenjualan::class)->name('kasir.pos');
 
-        // --- Rute untuk Laporan Kasir ---
+        // --- Rute untuk Laporan ---
         Route::prefix('kasir/laporan')->name('kasir.laporan.')->group(function () {
             Route::get('/penjualan', [KasirLaporanController::class, 'penjualanIndex'])->name('penjualan.index');
             Route::get('/penjualan/export', [KasirLaporanController::class, 'exportPenjualan'])->name('penjualan.export');
             // Tambahkan rute untuk detail penjualan kasir
             Route::get('/penjualan/{penjualan}', [KasirLaporanController::class, 'penjualanShow'])->name('penjualan.show');
-            
+
             Route::get('/stok', [KasirLaporanController::class, 'stokIndex'])->name('stok.index');
             Route::get('/reservasi', [KasirLaporanController::class, 'reservasiIndex'])->name('reservasi.index');
         });
-        
+
         // Anda bisa menambahkan rute lain yang terkait dengan kasir di sini,
         // seperti laporan penjualan yang bisa dilihat kasir (read-only)
         // Route::get('/kasir/laporan-penjualan', [KasirLaporanController::class, 'index'])->name('kasir.laporan_penjualan');
@@ -207,4 +220,4 @@ Route::middleware('auth')->group(function () {
 });
 
 // Impor rute-rute autentikasi dari Laravel Breeze
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

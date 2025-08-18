@@ -21,11 +21,10 @@ class PenggunaanBahanController extends Controller
      */
     public function index()
     {
-        // Ambil semua data penggunaan bahan, dengan relasi ke StockBahan dan User
         $penggunaanBahans = PenggunaanBahan::with(['stockBahan', 'user'])
-                                ->latest('tanggal_penggunaan') // Urutkan berdasarkan tanggal penggunaan terbaru
-                                ->latest('id') // Lalu ID terbaru
-                                ->paginate(10); // Menampilkan 10 catatan per halaman
+            ->latest('tanggal_penggunaan')
+            ->latest('id')
+            ->get(); // ambil semua, bukan paginate
 
         return view('admin.penggunaan_bahan.index', compact('penggunaanBahans'));
     }
@@ -72,7 +71,6 @@ class PenggunaanBahanController extends Controller
             // Flash message sukses
             Session::flash('success', 'Catatan penggunaan bahan berhasil ditambahkan dan stok telah disesuaikan.');
             return redirect()->route('admin.penggunaan_bahan.index');
-
         } catch (\Exception $e) {
             // Log error untuk debugging
             Log::error('Gagal menyimpan penggunaan bahan: ' . $e->getMessage(), ['exception' => $e, 'request_data' => $request->all()]);
@@ -151,7 +149,6 @@ class PenggunaanBahanController extends Controller
             // Flash message sukses
             Session::flash('success', 'Catatan penggunaan bahan berhasil diperbarui dan stok telah disesuaikan.');
             return redirect()->route('admin.penggunaan_bahan.index');
-
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaksi jika ada error
             // Log error untuk debugging
@@ -192,7 +189,6 @@ class PenggunaanBahanController extends Controller
             // Flash message sukses
             Session::flash('success', 'Catatan penggunaan bahan berhasil dihapus dan stok telah dikembalikan.');
             return redirect()->route('admin.penggunaan_bahan.index');
-
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaksi
             // Log error

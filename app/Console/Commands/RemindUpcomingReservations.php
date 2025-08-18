@@ -37,19 +37,19 @@ class RemindUpcomingReservations extends Command
 
         // Cari reservasi yang statusnya PAID, belum dikirim pengingat, dan jadwalnya besok
         $reservationsToRemind = Reservasi::with('jadwalWorkshop.paketWorkshop')
-                                    ->paid()
-                                    ->where('reminder_sent', false)
-                                    ->whereHas('jadwalWorkshop', function($query) use ($tomorrow) {
-                                        $query->whereDate('tanggal', $tomorrow);
-                                    })
-                                    ->get();
+            ->paid()
+            ->where('reminder_sent', false)
+            ->whereHas('jadwalWorkshop', function ($query) use ($tomorrow) {
+                $query->whereDate('tanggal', $tomorrow);
+            })
+            ->get();
 
         $this->info("Ditemukan " . $reservationsToRemind->count() . " reservasi untuk pengingat besok.");
 
         foreach ($reservationsToRemind as $reservasi) {
             if ($reservasi->jadwalWorkshop && $reservasi->jadwalWorkshop->paketWorkshop) {
                 $phoneNumberClean = ltrim($reservasi->telepon_pemesan, '+'); // Hapus '+' jika ada
-                $message = "Halo {$reservasi->nama_pemesan},\n\nIni adalah pengingat untuk reservasi workshop '{$reservasi->jadwalWorkshop->paketWorkshop->nama_paket}' Anda besok, tanggal {$reservasi->jadwalWorkshop->tanggal->format('d M Y')} pukul {$reservasi->jadwalWorkshop->jam_mulai->format('H:i')}.\n\nMohon hadir tepat waktu. Terima kasih!\nWorkshop Batik Tegalan";
+                $message = "Halo {$reservasi->nama_pemesan},\n\nIni adalah pengingat untuk reservasi workshop '{$reservasi->jadwalWorkshop->paketWorkshop->nama_paket}' Anda besok, tanggal {$reservasi->jadwalWorkshop->tanggal->format('d M Y')} pukul {$reservasi->jadwalWorkshop->jam_mulai->format('H:i')}.\n\nMohon hadir tepat waktu. Terima kasih!\nWorkshop Wastra Tegalan";
 
                 // Dispatch Job untuk mengirim notifikasi
                 SendWhatsAppNotification::dispatch($phoneNumberClean, $message, $reservasi->id);

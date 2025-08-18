@@ -8,14 +8,14 @@
                 <a href="{{ route('home') }}" class="group flex items-center space-x-3">
                     <div class="relative">
                         {{-- Ganti x-application-logo dengan gambar logo kustom Anda --}}
-                        <img src="{{ asset('img/griya-batik.png') }}" alt="Batik Tegalan Logo" class="block h-12 w-auto">
+                        <img src="{{ asset('img/griya-batik.png') }}" alt="Wastra Tegalan Logo" class="block h-12 w-auto">
                         {{-- Efek Blur Hover (disesuaikan agar cocok dengan logo baru jika perlu) --}}
                         {{-- <div class="absolute -inset-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur"></div> --}}
                     </div>
                     {{-- Nama Brand (Hanya Tampil di Layar Selain HP) --}}
                     <div class="hidden sm:block">
                         <div class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                            Batik Tegalan
+                            Wastra Tegalan
                         </div>
                         <div class="text-xs text-gray-400 -mt-1">Workshop & Edukasi</div>
                     </div>
@@ -90,7 +90,7 @@
                     </x-nav-link>
                 @else
                     {{-- Menu untuk Guest - Cek Reservasi --}}
-                    <x-nav-link :href="route('reservasi.status.check.form')" 
+                    {{-- <x-nav-link :href="route('reservasi.status.check.form')" 
                                 :active="request()->routeIs('reservasi.status.check.form')" 
                                 class="relative px-6 py-3 rounded-xl font-semibold text-gray-300 hover:text-white transition-all duration-300 group">
                         <span class="relative z-10 flex items-center">
@@ -98,13 +98,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                             </svg>
                             {{ __('Cek Reservasi') }}
-                        </span>
+                        </span> --}}
                         {{-- Efek Hover dan Aktif --}}
-                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl opacity-0 group-hover:opacity-100 {{ request()->routeIs('reservasi.status.check.form') ? 'opacity-100' : '' }} transition-opacity duration-300"></div>
+                        {{-- <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl opacity-0 group-hover:opacity-100 {{ request()->routeIs('reservasi.status.check.form') ? 'opacity-100' : '' }} transition-opacity duration-300"></div>
                         @if(request()->routeIs('reservasi.status.check.form'))
                             <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
                         @endif
-                    </x-nav-link>
+                    </x-nav-link> --}}
                 @endauth
             </div>
 

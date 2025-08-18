@@ -8,7 +8,7 @@
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white text-center">
                 <h2 class="font-bold text-3xl mb-2">
-                    Daftar Workshop Batik Tegalan
+                    Daftar Workshop Wastra Tegalan
                 </h2>
                 <p class="text-indigo-100 text-lg">Isi formulir di bawah untuk reservasi tempat Anda!</p>
             </div>
@@ -86,7 +86,7 @@
                                         <input type="radio" name="jenis_peserta" id="jenis_peserta_individu" value="individu"
                                             class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 w-5 h-5"
                                             {{ old('jenis_peserta') == 'individu' ? 'checked' : '' }} required>
-                                        <span class="ml-2 text-base text-gray-800">Individu</span>
+                                        <span class="ml-2 text-base text-gray-800">Individu (1 orang)</span>
                                     </label>
                                     <label for="jenis_peserta_kelompok" class="inline-flex items-center cursor-pointer">
                                         <input type="radio" name="jenis_peserta" id="jenis_peserta_kelompok" value="kelompok"
@@ -100,12 +100,12 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-5">
+                            <div class="mb-5" id="jumlah_peserta_container">
                                 <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Peserta <span class="text-red-500">*</span></label>
                                 <input type="number" name="jumlah_peserta" id="jumlah_peserta"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-base transition duration-150 ease-in-out
                                     @error('jumlah_peserta') border-red-500 @enderror"
-                                    value="{{ old('jumlah_peserta') }}" required min="1" placeholder="Masukkan jumlah peserta">
+                                    value="{{ old('jumlah_peserta', 1) }}" required min="1" placeholder="Masukkan jumlah peserta">
                                 @error('jumlah_peserta')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -125,7 +125,7 @@
                                 <input type="text" name="nama_pemesan" id="nama_pemesan"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
                                     @error('nama_pemesan') border-red-500 @enderror"
-                                    value="{{ old('nama_pemesan', $name) }}" required maxlength="255" placeholder="Nama lengkap Anda">
+                                    value="{{ old('nama_pemesan', $name ?? '') }}" required maxlength="255" placeholder="Nama lengkap Anda">
                                 @error('nama_pemesan')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -136,7 +136,7 @@
                                 <input type="email" name="email_pemesan" id="email_pemesan"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
                                     @error('email_pemesan') border-red-500 @enderror"
-                                    value="{{ old('email_pemesan', $email) }}" required maxlength="255" placeholder="alamatemail@contoh.com">
+                                    value="{{ old('email_pemesan', $email ?? '') }}" required maxlength="255" placeholder="alamatemail@contoh.com">
                                 @error('email_pemesan')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -167,10 +167,10 @@
                             @guest
                             <div class="mb-5">
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input type="password" name="password" id="password" rows="3"
+                                <input type="password" name="password" id="password"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
-                                    @error('alamat_pemesan') border-red-500 @enderror"
-                                    maxlength="500" placeholder="Password">{{ old('password') }}</input>
+                                    @error('password') border-red-500 @enderror"
+                                    maxlength="500" placeholder="Password">
                                 @error('password')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -227,8 +227,36 @@
         const jadwalSelect = document.getElementById('jadwal_workshop_id');
         const jenisPesertaRadios = document.querySelectorAll('input[name="jenis_peserta"]');
         const jumlahPesertaInput = document.getElementById('jumlah_peserta');
+        const jumlahPesertaContainer = document.getElementById('jumlah_peserta_container');
         const totalHargaDisplay = document.getElementById('total_harga_display');
         const totalHargaHidden = document.getElementById('total_harga_hidden');
+
+        function toggleJumlahPesertaField() {
+            let jenisPeserta = '';
+            jenisPesertaRadios.forEach(radio => {
+                if (radio.checked) {
+                    jenisPeserta = radio.value;
+                }
+            });
+
+            if (jenisPeserta === 'individu') {
+                // Sembunyikan field jumlah peserta dan set value ke 1
+                jumlahPesertaContainer.style.display = 'none';
+                jumlahPesertaInput.value = 1;
+                jumlahPesertaInput.removeAttribute('required');
+                jumlahPesertaInput.setAttribute('min', '1'); // Reset min ke 1
+                jumlahPesertaInput.setCustomValidity(''); // Reset validation
+            } else if (jenisPeserta === 'kelompok') {
+                // Tampilkan field jumlah peserta dan set minimum 2
+                jumlahPesertaContainer.style.display = 'block';
+                jumlahPesertaInput.setAttribute('required', 'required');
+                jumlahPesertaInput.setAttribute('min', '2');
+                if (jumlahPesertaInput.value < 2) {
+                    jumlahPesertaInput.value = 2;
+                }
+                jumlahPesertaInput.setCustomValidity(''); // Reset validation
+            }
+        }
 
         function calculateTotalPrice() {
             const selectedJadwalOption = jadwalSelect.options[jadwalSelect.selectedIndex];
@@ -280,10 +308,16 @@
 
         // Tambahkan event listener
         jadwalSelect.addEventListener('change', calculateTotalPrice);
-        jenisPesertaRadios.forEach(radio => radio.addEventListener('change', calculateTotalPrice));
+        jenisPesertaRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                toggleJumlahPesertaField();
+                calculateTotalPrice();
+            });
+        });
         jumlahPesertaInput.addEventListener('input', calculateTotalPrice);
 
-        // Panggil saat halaman dimuat untuk inisialisasi nilai jika ada old() value
+        // Inisialisasi saat halaman dimuat
+        toggleJumlahPesertaField();
         calculateTotalPrice();
     });
 </script>

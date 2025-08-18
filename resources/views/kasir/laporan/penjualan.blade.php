@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Penjualan Saya')
+@section('title', 'Laporan Penjualan')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 py-6">
@@ -16,7 +16,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
                     </div>
-                    <h1 class="text-3xl font-bold text-gray-900">Laporan Penjualan Saya</h1>
+                    <h1 class="text-3xl font-bold text-gray-900">Laporan Penjualan</h1>
                 </div>
                 <p class="text-gray-600 mt-2 ml-12">Lihat dan ekspor catatan penjualan yang Anda lakukan.</p>
             </div>

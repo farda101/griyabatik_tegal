@@ -6,13 +6,16 @@ use App\Models\User;
 use App\Models\PaketWorkshop;
 use App\Models\Pengrajin;
 use App\Models\Setting;
-use App\Models\JadwalWorkshop; // Import model JadwalWorkshop
-use App\Models\Reservasi;      // Import model Reservasi
-use App\Models\StockBatik;     // Import model StockBatik
-use App\Models\StockBahan;     // Import model StockBahan
+use App\Models\JadwalWorkshop;
+use App\Models\Reservasi;
+use App\Models\StockBatik;
+use App\Models\StockBahan;
+use App\Models\PenggunaanBahan;
+use App\Models\Penjualan;
+use App\Models\DetailPenjualan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon; // Import Carbon untuk manipulasi tanggal/waktu
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -38,346 +41,387 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $client = User::create([
-            'name' => fake()->name(),
-            'email' => fake()->email(),
+        $kasir2 = User::create([
+            'name' => 'Kasir 2',
+            'email' => 'kasir2@batikworkshop.com',
             'password' => Hash::make('password'),
-            'role' => 'client',
+            'role' => 'kasir',
             'is_active' => true,
         ]);
 
-        $client2 = User::create([
-            'name' => fake()->name(),
-            'email' => fake()->email(),
-            'password' => Hash::make('password'),
-            'role' => 'client',
-            'is_active' => true,
-        ]);
+        // Generate multiple clients (lebih realistis)
+        $clients = [];
+        for ($i = 1; $i <= 15; $i++) {
+            $clients[] = User::create([
+                'name' => fake()->name(),
+                'email' => fake()->unique()->email(),
+                'password' => Hash::make('password'),
+                'role' => 'client',
+                'is_active' => true,
+            ]);
+        }
 
         // 2. Default settings
-        Setting::create(['key' => 'app_name', 'value' => 'Workshop Batik Tegalan']);
+        Setting::create(['key' => 'app_name', 'value' => 'Workshop Wastra Tegalan']);
         Setting::create(['key' => 'whatsapp_api_key', 'value' => '']);
         Setting::create(['key' => 'midtrans_server_key', 'value' => '']);
         Setting::create(['key' => 'midtrans_client_key', 'value' => '']);
         Setting::create(['key' => 'min_stock_alert', 'value' => '5', 'type' => 'number', 'description' => 'Minimum stock level for batik products to trigger alert.']);
         Setting::create(['key' => 'min_stock_alert_bahan', 'value' => '10', 'type' => 'number', 'description' => 'Minimum stock level for raw materials to trigger alert.']);
 
+        // 3. Multiple pengrajin (lebih realistis)
+        $pengrajins = [
+            Pengrajin::create([
+                'kode_pengrajin' => '9901',
+                'nama_pengrajin' => 'Pengrajin Wastra Tegalan Prima',
+                'alamat' => 'Jl. Batik Jaya No. 1, Tegal',
+                'telepon' => '08123456789',
+                'is_active' => true,
+            ]),
+            Pengrajin::create([
+                'kode_pengrajin' => '9902',
+                'nama_pengrajin' => 'Batik Solo Heritage',
+                'alamat' => 'Jl. Parangtritis No. 2, Solo',
+                'telepon' => '08987654321',
+                'is_active' => true,
+            ]),
+            Pengrajin::create([
+                'kode_pengrajin' => '9903',
+                'nama_pengrajin' => 'Cirebon Batik Center',
+                'alamat' => 'Jl. Kejaksan No. 15, Cirebon',
+                'telepon' => '08567891234',
+                'is_active' => true,
+            ]),
+            Pengrajin::create([
+                'kode_pengrajin' => '9904',
+                'nama_pengrajin' => 'Pekalongan Batik House',
+                'alamat' => 'Jl. Jetayu No. 8, Pekalongan',
+                'telepon' => '08234567890',
+                'is_active' => true,
+            ]),
+        ];
 
-        // // 3. Default pengrajin
-        $pengrajin1 = Pengrajin::create([
-            'kode_pengrajin' => '9901',
-            'nama_pengrajin' => 'Pengrajin Batik Tegalan 1',
-            'alamat' => 'Jl. Batik Jaya No. 1, Tegal',
-            'telepon' => '08123456789',
-            'is_active' => true,
-        ]);
+        // 4. Default paket workshop (lebih bervariasi)
+        $pakets = [
+            PaketWorkshop::create([
+                'nama_paket' => 'Membatik Sapu Tangan',
+                'deskripsi' => 'Belajar dasar membatik di sapu tangan.',
+                'harga_individu' => 50000,
+                'harga_kelompok' => 40000,
+                'durasi_menit' => 120,
+                'max_peserta' => 20,
+                'is_active' => true,
+            ]),
+            PaketWorkshop::create([
+                'nama_paket' => 'Membatik Taplak Meja',
+                'deskripsi' => 'Teknik membatik lebih lanjut untuk taplak meja.',
+                'harga_individu' => 75000,
+                'harga_kelompok' => 60000,
+                'durasi_menit' => 180,
+                'max_peserta' => 15,
+                'is_active' => true,
+            ]),
+            PaketWorkshop::create([
+                'nama_paket' => 'Membatik Kain Panjang',
+                'deskripsi' => 'Pengenalan teknik membatik pada kain ukuran besar.',
+                'harga_individu' => 150000,
+                'harga_kelompok' => 125000,
+                'durasi_menit' => 300,
+                'max_peserta' => 10,
+                'is_active' => true,
+            ]),
+            PaketWorkshop::create([
+                'nama_paket' => 'Membatik Tas Kanvas',
+                'deskripsi' => 'Workshop membatik motif simple pada tas kanvas.',
+                'harga_individu' => 85000,
+                'harga_kelompok' => 70000,
+                'durasi_menit' => 150,
+                'max_peserta' => 18,
+                'is_active' => true,
+            ]),
+            PaketWorkshop::create([
+                'nama_paket' => 'Batik Tulis Traditional',
+                'deskripsi' => 'Kelas advanced batik tulis dengan motif klasik.',
+                'harga_individu' => 200000,
+                'harga_kelompok' => 175000,
+                'durasi_menit' => 360,
+                'max_peserta' => 8,
+                'is_active' => true,
+            ]),
+        ];
 
-        $pengrajin2 = Pengrajin::create([
-            'kode_pengrajin' => '9902',
-            'nama_pengrajin' => 'Pengrajin Batik Solo',
-            'alamat' => 'Jl. Parangtritis No. 2, Solo',
-            'telepon' => '08987654321',
-            'is_active' => true,
-        ]);
+        // Data produk batik yang akan dirotasi
+        $batikProducts = [
+            ['nama' => 'Batik Motif Parang', 'motif' => 'Parang Rusak', 'ukuran' => '200x100 cm', 'harga_beli' => 120000, 'harga_jual' => 180000],
+            ['nama' => 'Batik Mega Mendung', 'motif' => 'Mega Mendung', 'ukuran' => '150x80 cm', 'harga_beli' => 80000, 'harga_jual' => 120000],
+            ['nama' => 'Batik Tiga Negeri', 'motif' => 'Tiga Negeri', 'ukuran' => '220x110 cm', 'harga_beli' => 200000, 'harga_jual' => 350000],
+            ['nama' => 'Batik Kawung', 'motif' => 'Kawung', 'ukuran' => '180x90 cm', 'harga_beli' => 100000, 'harga_jual' => 150000],
+            ['nama' => 'Batik Sekar Jagad', 'motif' => 'Sekar Jagad', 'ukuran' => '200x115 cm', 'harga_beli' => 180000, 'harga_jual' => 280000],
+            ['nama' => 'Batik Truntum', 'motif' => 'Truntum', 'ukuran' => '160x85 cm', 'harga_beli' => 90000, 'harga_jual' => 140000],
+            ['nama' => 'Batik Sidomukti', 'motif' => 'Sidomukti', 'ukuran' => '190x95 cm', 'harga_beli' => 130000, 'harga_jual' => 200000],
+        ];
 
-        // // 4. Default paket workshop
-        $paket1 = PaketWorkshop::create([
-            'nama_paket' => 'Membatik Sapu Tangan',
-            'deskripsi' => 'Belajar dasar membatik di sapu tangan.',
-            'harga_individu' => 50000,
-            'harga_kelompok' => 40000,
-            'durasi_menit' => 120, // 2 jam
-            'max_peserta' => 20,
-            'is_active' => true,
-        ]);
+        // Data bahan yang akan dirotasi
+        $bahanMaterials = [
+            ['nama' => 'Kain Mori Prima', 'satuan' => 'meter', 'harga' => 25000],
+            ['nama' => 'Kain Mori Super', 'satuan' => 'meter', 'harga' => 35000],
+            ['nama' => 'Malam Batik', 'satuan' => 'kg', 'harga' => 50000],
+            ['nama' => 'Pewarna Remazol Merah', 'satuan' => 'gram', 'harga' => 1500],
+            ['nama' => 'Pewarna Remazol Biru', 'satuan' => 'gram', 'harga' => 1500],
+            ['nama' => 'Pewarna Remazol Kuning', 'satuan' => 'gram', 'harga' => 1500],
+            ['nama' => 'Canting Tulis No 1', 'satuan' => 'pcs', 'harga' => 15000],
+            ['nama' => 'Canting Tulis No 2', 'satuan' => 'pcs', 'harga' => 18000],
+            ['nama' => 'Garam Diazo', 'satuan' => 'kg', 'harga' => 45000],
+        ];
 
-        $paket2 = PaketWorkshop::create([
-            'nama_paket' => 'Membatik Taplak Meja',
-            'deskripsi' => 'Teknik membatik lebih lanjut untuk taplak meja.',
-            'harga_individu' => 75000,
-            'harga_kelompok' => 60000,
-            'durasi_menit' => 180, // 3 jam
-            'max_peserta' => 15,
-            'is_active' => true,
-        ]);
-
-        $paket3 = PaketWorkshop::create([
-            'nama_paket' => 'Membatik Kain Panjang',
-            'deskripsi' => 'Pengenalan teknik membatik pada kain ukuran besar.',
-            'harga_individu' => 150000,
-            'harga_kelompok' => 125000,
-            'durasi_menit' => 300, // 5 jam
-            'max_peserta' => 10,
-            'is_active' => true,
-        ]);
-
-        for ($i = 180; $i > 0; $i--) {
+        // 5. Generate data historis 6 bulan (180 hari)
+        for ($i = 180; $i >= 0; $i--) {
             $currentDate = Carbon::today()->subDays($i);
             $currentDateString = $currentDate->toDateString();
-            // // 5. Default jadwal workshop
-            $jadwal1 = JadwalWorkshop::create([
-                'paket_workshop_id' => $paket1->id,
-                'tanggal' => $currentDateString, // Hari sekarang - $i
-                'jam_mulai' => '09:00:00',
-                'jam_selesai' => '11:00:00',
-                'max_peserta' => 20,
-                'peserta_terdaftar' => 0,
-                'status' => 'available',
-            ]);
 
-            $jadwal2 = JadwalWorkshop::create([
-                'paket_workshop_id' => $paket2->id,
-                'tanggal' => $currentDateString,
-                'jam_mulai' => '14:00:00',
-                'jam_selesai' => '17:00:00',
-                'max_peserta' => 15,
-                'peserta_terdaftar' => 0, // Sudah ada 5 peserta
-                'status' => 'available',
-            ]);
+            // Generate 2-4 jadwal workshop per hari secara random
+            $dailySchedules = rand(2, 4);
+            $createdSchedules = [];
 
-            $jadwal3 = JadwalWorkshop::create([
-                'paket_workshop_id' => $paket3->id,
-                'tanggal' => $currentDateString,
-                'jam_mulai' => '13:00:00',
-                'jam_selesai' => '14:00:00',
-                'max_peserta' => 10,
-                'peserta_terdaftar' => 0, // Jadwal ini penuh
-            ]);
+            for ($j = 0; $j < $dailySchedules; $j++) {
+                $randomPaket = $pakets[array_rand($pakets)];
+                $timeSlots = [
+                    ['start' => '09:00:00', 'end' => '11:00:00'],
+                    ['start' => '13:00:00', 'end' => '15:00:00'],
+                    ['start' => '15:30:00', 'end' => '17:30:00'],
+                    ['start' => '10:00:00', 'end' => '12:00:00'],
+                ];
+                $randomTime = $timeSlots[array_rand($timeSlots)];
 
-            $jadwal4 = JadwalWorkshop::create([
-                'paket_workshop_id' => $paket1->id,
-                'tanggal' => $currentDateString,
-                'jam_mulai' => '09:00:00',
-                'jam_selesai' => '11:00:00',
-                'max_peserta' => 20,
-                'peserta_terdaftar' => 18,
-                'status' => 'available',
-            ]);
+                $jadwal = JadwalWorkshop::create([
+                    'paket_workshop_id' => $randomPaket->id,
+                    'tanggal' => $currentDateString,
+                    'jam_mulai' => $randomTime['start'],
+                    'jam_selesai' => $randomTime['end'],
+                    'max_peserta' => $randomPaket->max_peserta,
+                    'peserta_terdaftar' => 0,
+                    'status' => 'available',
+                ]);
 
-            $reservasi1 = Reservasi::create([
-                'nomor_reservasi' => Reservasi::generateNomorReservasi(), // Otomatis generate
-                'jadwal_workshop_id' => $jadwal2->id, // Reservasi untuk jadwal2
-                'jenis_peserta' => 'kelompok',
-                'jumlah_peserta' => 5,
-                'nama_pemesan' => $client->name,
-                'email_pemesan' => $client->email,
-                'telepon_pemesan' => fake('id')->phoneNumber(),
-                'alamat_pemesan' => fake('id')->streetAddress(),
-                'file_permohonan' => null, // Contoh tanpa file
-                'total_harga' => $paket2->harga_kelompok * 5, // 60000 * 5 = 300000
-                'status_pembayaran' => 'pending', // Awalnya pending
-                'midtrans_transaction_id' => null,
-                'midtrans_response' => null,
-                'paid_at' => null,
-                'reminder_sent' => false,
-                'user_id' => $client->id,
-            ]);
+                $createdSchedules[] = $jadwal;
+            }
 
-            $reservasi2 = Reservasi::create([
-                'nomor_reservasi' => Reservasi::generateNomorReservasi(),
-                'jadwal_workshop_id' => $jadwal1->id,
-                'jenis_peserta' => 'individu',
-                'jumlah_peserta' => 1,
-                'nama_pemesan' => $client2->name,
-                'email_pemesan' => $client2->email,
-                'telepon_pemesan' => '087812345678',
-                'alamat_pemesan' => 'Jl. Kebon Jeruk No. 5, Bandung',
-                'file_permohonan' => null,
-                'total_harga' => $paket1->harga_individu * 1, // 50000 * 1 = 50000
-                'status_pembayaran' => 'paid', // Contoh yang sudah paid
-                'midtrans_transaction_id' => 'MIDTRANS-12345',
-                'midtrans_response' => json_encode(['status_code' => '200', 'gross_amount' => '50000.00']),
-                'paid_at' => $currentDate->subHours(2), // 2 jam lalu
-                'reminder_sent' => true,
-                'user_id' => $client2->id,
-            ]);
-            // // Update peserta terdaftar di jadwal workshop setelah reservasi paid
-            $reservasi2->jadwalWorkshop->updatePesertaTerdaftar();
+            // Generate reservasi dengan probabilitas 60% untuk setiap jadwal
+            foreach ($createdSchedules as $jadwal) {
+                if (rand(1, 100) <= 60) { // 60% chance ada reservasi
+                    $randomClient = $clients[array_rand($clients)];
+                    $jenisPeserta = rand(1, 100) <= 30 ? 'kelompok' : 'individu'; // 30% kelompok
+                    $jumlahPeserta = $jenisPeserta == 'kelompok' ? rand(3, min(8, $jadwal->max_peserta)) : 1;
+                    $harga = $jenisPeserta == 'kelompok' ? $jadwal->paketWorkshop->harga_kelompok : $jadwal->paketWorkshop->harga_individu;
 
+                    // Status pembayaran: 80% paid, 15% pending, 5% failed
+                    $statusRand = rand(1, 100);
+                    if ($statusRand <= 80) {
+                        $statusPembayaran = 'paid';
+                        $paidAt = $currentDate->copy()->addHours(rand(1, 6));
+                        $midtransId = 'MIDTRANS-' . strtoupper(fake()->bothify('??##??##'));
+                    } elseif ($statusRand <= 95) {
+                        $statusPembayaran = 'pending';
+                        $paidAt = null;
+                        $midtransId = null;
+                    } else {
+                        $statusPembayaran = 'failed';
+                        $paidAt = null;
+                        $midtransId = 'FAILED-' . strtoupper(fake()->bothify('??##??##'));
+                    }
 
-            $batik1 = StockBatik::create([
-                // 'kode_batik' akan di-generate otomatis di model
-                'pengrajin_id' => $pengrajin1->id,
-                'nama_batik' => 'Batik Motif Parang',
-                'deskripsi' => 'Batik tulis motif klasik Parang Rusak.',
-                'motif' => 'Parang Rusak',
-                'ukuran' => '200x100 cm',
-                'harga_beli' => 120000.00,
-                'harga_jual' => 180000.00,
-                'qty_masuk' => 15,
-                'qty_tersedia' => 15, // Default dari boot method di model
-                'qty_terjual' => 0,    // Default dari boot method di model
-                'qr_code' => null,     // Akan diisi setelah model dibuat di controller
-                'tanggal_masuk' => $currentDateString, // 10 hari lalu
-            ]);
-            // // Generate QR Code untuk batik ini (simulasi dari controller)
-            $qrCodeDataBatik1 = json_encode([
-                'kode' => $batik1->kode_batik,
-                'nama' => $batik1->nama_batik,
-                'pengrajin' => $batik1->pengrajin->nama_pengrajin,
-                'harga_jual' => $batik1->harga_jual,
-                'tanggal_masuk' => $batik1->tanggal_masuk->format('Y-m-d'),
-            ]);
-            $qrPathBatik1 = 'qr_codes/batik/batik_' . $batik1->kode_batik . '.svg';
-            \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->format('svg')->generate($qrCodeDataBatik1, storage_path('app/public/' . $qrPathBatik1));
-            $batik1->update(['qr_code' => $qrPathBatik1]);
+                    $reservasi = Reservasi::create([
+                        'nomor_reservasi' => Reservasi::generateNomorReservasi(),
+                        'jadwal_workshop_id' => $jadwal->id,
+                        'jenis_peserta' => $jenisPeserta,
+                        'jumlah_peserta' => $jumlahPeserta,
+                        'nama_pemesan' => $randomClient->name,
+                        'email_pemesan' => $randomClient->email,
+                        'telepon_pemesan' => fake('id')->phoneNumber(),
+                        'alamat_pemesan' => fake('id')->streetAddress(),
+                        'file_permohonan' => null,
+                        'total_harga' => $harga * $jumlahPeserta,
+                        'status_pembayaran' => $statusPembayaran,
+                        'midtrans_transaction_id' => $midtransId,
+                        'midtrans_response' => $midtransId ? json_encode(['status_code' => '200', 'gross_amount' => ($harga * $jumlahPeserta) . '.00']) : null,
+                        'paid_at' => $paidAt,
+                        'reminder_sent' => $statusPembayaran == 'paid',
+                        'user_id' => $randomClient->id,
+                        'created_at' => $currentDate,
+                        'updated_at' => $paidAt ?? $currentDate,
+                    ]);
 
+                    // Update peserta terdaftar jika paid
+                    if ($statusPembayaran == 'paid') {
+                        $jadwal->peserta_terdaftar += $jumlahPeserta;
+                        $jadwal->save();
+                    }
+                }
+            }
 
-            $batik2 = StockBatik::create([
-                // 'kode_batik' akan di-generate otomatis di model
-                'pengrajin_id' => $pengrajin2->id,
-                'nama_batik' => 'Batik Mega Mendung',
-                'deskripsi' => 'Batik cap motif awan khas Cirebon.',
-                'motif' => 'Mega Mendung',
-                'ukuran' => '150x80 cm',
-                'harga_beli' => 80000.00,
-                'harga_jual' => 120000.00,
-                'qty_masuk' => 20,
-                'qty_tersedia' => 18, // Contoh: sudah terjual 2
-                'qty_terjual' => 2,
-                'qr_code' => null,
-                'tanggal_masuk' => $currentDateString,
-            ]);
-            // Generate QR Code untuk batik ini
-            $qrCodeDataBatik2 = json_encode([
-                'kode' => $batik2->kode_batik,
-                'nama' => $batik2->nama_batik,
-                'pengrajin' => $batik2->pengrajin->nama_pengrajin,
-                'harga_jual' => $batik2->harga_jual,
-                'tanggal_masuk' => $batik2->tanggal_masuk->format('Y-m-d'),
-            ]);
-            $qrPathBatik2 = 'qr_codes/batik/batik_' . $batik2->kode_batik . '.svg';
-            \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->format('svg')->generate($qrCodeDataBatik2, storage_path('app/public/' . $qrPathBatik2));
-            $batik2->update(['qr_code' => $qrPathBatik2]);
+            // Generate stock batik masuk setiap 3-7 hari sekali
+            if ($i % rand(3, 7) == 0) {
+                $randomBatik = $batikProducts[array_rand($batikProducts)];
+                $randomPengrajin = $pengrajins[array_rand($pengrajins)];
+                $qtyMasuk = rand(5, 25);
 
+                $batik = StockBatik::create([
+                    'pengrajin_id' => $randomPengrajin->id,
+                    'nama_batik' => $randomBatik['nama'],
+                    'deskripsi' => fake('id')->sentence(8),
+                    'motif' => $randomBatik['motif'],
+                    'ukuran' => $randomBatik['ukuran'],
+                    'harga_beli' => $randomBatik['harga_beli'],
+                    'harga_jual' => $randomBatik['harga_jual'],
+                    'qty_masuk' => $qtyMasuk,
+                    'qty_tersedia' => $qtyMasuk,
+                    'qty_terjual' => 0,
+                    'qr_code' => null,
+                    'tanggal_masuk' => $currentDateString,
+                ]);
 
-            $batik3 = StockBatik::create([
-                // 'kode_batik' akan di-generate otomatis di model
-                'pengrajin_id' => $pengrajin1->id,
-                'nama_batik' => 'Batik Tiga Negeri',
-                'deskripsi' => 'Batik dengan perpaduan warna khas Tiga Negeri.',
-                'motif' => 'Tiga Negeri',
-                'ukuran' => '220x110 cm',
-                'harga_beli' => 200000.00,
-                'harga_jual' => 350000.00,
-                'qty_masuk' => 5,
-                'qty_tersedia' => 2, // Contoh: stok rendah
-                'qty_terjual' => 3,
-                'qr_code' => null,
-                'tanggal_masuk' => $currentDateString, // 20 hari lalu
-            ]);
-            // Generate QR Code untuk batik ini
-            $qrCodeDataBatik3 = json_encode([
-                'kode' => $batik3->kode_batik,
-                'nama' => $batik3->nama_batik,
-                'pengrajin' => $batik3->pengrajin->nama_pengrajin,
-                'harga_jual' => $batik3->harga_jual,
-                'tanggal_masuk' => $batik3->tanggal_masuk->format('Y-m-d'),
-            ]);
-            $qrPathBatik3 = 'qr_codes/batik/batik_' . $batik3->kode_batik . '.svg';
-            \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->format('svg')->generate($qrCodeDataBatik3, storage_path('app/public/' . $qrPathBatik3));
-            $batik3->update(['qr_code' => $qrPathBatik3]);
+                // Generate QR Code
+                $qrCodeData = json_encode([
+                    'kode' => $batik->kode_batik,
+                    'nama' => $batik->nama_batik,
+                    'pengrajin' => $batik->pengrajin->nama_pengrajin,
+                    'harga_jual' => $batik->harga_jual,
+                    'tanggal_masuk' => $batik->tanggal_masuk->format('Y-m-d'),
+                ]);
+                $qrPath = 'qr_codes/batik/batik_' . $batik->kode_batik . '.svg';
+                \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->format('svg')->generate($qrCodeData, storage_path('app/public/' . $qrPath));
+                $batik->update(['qr_code' => $qrPath]);
+            }
 
+            // Generate stock bahan masuk setiap 5-10 hari sekali
+            if ($i % rand(5, 10) == 0) {
+                $randomBahan = $bahanMaterials[array_rand($bahanMaterials)];
+                $qtyMasuk = rand(20, 200);
 
-            $bahan1 = StockBahan::create([
-                // 'kode_bahan' akan di-generate otomatis di model
-                'nama_bahan' => 'Kain Mori Prima',
-                'satuan' => 'meter',
-                'harga_satuan' => 25000.00,
-                'qty_masuk' => 100,
-                'qty_tersedia' => 100, // Default dari boot method di model
-                'qty_terpakai' => 0,    // Default dari boot method di model
-                'total_harga' => 25000 * 100, // Akan dihitung ulang di model
-                'qr_code' => null, // Jika ada QR code bahan
-                'tanggal_masuk' => $currentDateString,
-                'keterangan' => 'Bahan dasar kain putih untuk batik tulis.',
-            ]);
+                StockBahan::create([
+                    'nama_bahan' => $randomBahan['nama'],
+                    'satuan' => $randomBahan['satuan'],
+                    'harga_satuan' => $randomBahan['harga'],
+                    'qty_masuk' => $qtyMasuk,
+                    'qty_tersedia' => $qtyMasuk,
+                    'qty_terpakai' => 0,
+                    'total_harga' => $randomBahan['harga'] * $qtyMasuk,
+                    'qr_code' => null,
+                    'tanggal_masuk' => $currentDateString,
+                    'keterangan' => fake('id')->sentence(6),
+                ]);
+            }
 
-            $bahan2 = StockBahan::create([
-                // 'kode_bahan' akan di-generate otomatis di model
-                'nama_bahan' => 'Malam Batik',
-                'satuan' => 'kg',
-                'harga_satuan' => 50000.00,
-                'qty_masuk' => 50,
-                'qty_tersedia' => 45, // Sudah terpakai 5
-                'qty_terpakai' => 5,
-                'total_harga' => 50000 * 50, // Akan dihitung ulang di model
-                'qr_code' => null,
-                'tanggal_masuk' => $currentDateString,
-                'keterangan' => 'Malam berkualitas tinggi untuk proses canting.',
-            ]);
+            // Generate penjualan harian (1-3 transaksi per hari dengan probabilitas 70%)
+            if (rand(1, 100) <= 70) {
+                $dailySales = rand(1, 3);
 
-            $bahan3 = StockBahan::create([
-                'nama_bahan' => 'Pewarna Remazol Merah',
-                'satuan' => 'gram',
-                'harga_satuan' => 1500.00,
-                'qty_masuk' => 200,
-                'qty_tersedia' => 10, // Stok rendah
-                'qty_terpakai' => 190,
-                'total_harga' => 1500 * 200,
-                'qr_code' => null,
-                'tanggal_masuk' => $currentDateString,
-                'keterangan' => 'Pewarna batik sintetis merah.',
-            ]);
+                for ($s = 0; $s < $dailySales; $s++) {
+                    // Ambil stok batik yang tersedia
+                    $availableBatiks = StockBatik::where('qty_tersedia', '>', 0)
+                        ->where('tanggal_masuk', '<=', $currentDateString)
+                        ->get();
 
-            \App\Models\PenggunaanBahan::create([
-                'stock_bahan_id' => $bahan2->id,
-                'qty_digunakan' => 5,
-                'keperluan' => 'Produksi Kain Batik',
-                'keterangan' => 'Digunakan untuk produksi batch B001',
-                'tanggal_penggunaan' => $currentDateString,
-                'user_id' => $superadmin->id, // Atau id kasir jika mereka bisa mencatat penggunaan
-            ]);
+                    if ($availableBatiks->count() > 0) {
+                        $itemCount = rand(1, min(3, $availableBatiks->count()));
+                        $selectedBatiks = $availableBatiks->random($itemCount);
 
-            $penjualan1 = \App\Models\Penjualan::create([
-                'nomor_nota' => \App\Models\Penjualan::generateNomorNota(),
-                'kasir_id' => $kasir->id,
-                'nama_pembeli' => fake()->name(),
-                'telepon_pembeli' => fake()->phoneNumber(),
-                'total_harga' => ($batik1->harga_jual * 1) + ($batik2->harga_jual * 1), // 180000 + 120000 = 300000
-                'total_bayar' => 300000,
-                'kembalian' => 0,
-                'tanggal_penjualan' => $currentDate->subHours(1),
-            ]);
+                        $totalHarga = 0;
+                        $penjualan = Penjualan::create([
+                            'nomor_nota' => Penjualan::generateNomorNota(),
+                            'kasir_id' => rand(1, 2) == 1 ? $kasir->id : $kasir2->id,
+                            'nama_pembeli' => fake()->name(),
+                            'telepon_pembeli' => fake()->phoneNumber(),
+                            'total_harga' => 0, // akan diupdate setelah detail
+                            'total_bayar' => 0, // akan diupdate setelah detail
+                            'kembalian' => 0, // akan diupdate setelah detail
+                            'tanggal_penjualan' => $currentDate->copy()->addHours(rand(8, 17))->addMinutes(rand(0, 59)),
+                        ]);
 
-            \App\Models\DetailPenjualan::create([
-                'penjualan_id' => $penjualan1->id,
-                'stock_batik_id' => $batik1->id,
-                'qty' => 1,
-                'harga_satuan' => $batik1->harga_jual,
-                'subtotal' => $batik1->harga_jual * 1,
-            ]);
-            $batik1->kurangiStock(1); // Kurangi stok batik1
+                        foreach ($selectedBatiks as $batik) {
+                            $qtyJual = rand(1, min(3, $batik->qty_tersedia));
+                            $subtotal = $batik->harga_jual * $qtyJual;
+                            $totalHarga += $subtotal;
 
-            \App\Models\DetailPenjualan::create([
-                'penjualan_id' => $penjualan1->id,
-                'stock_batik_id' => $batik2->id,
-                'qty' => 1,
-                'harga_satuan' => $batik2->harga_jual,
-                'subtotal' => $batik2->harga_jual * 1,
-            ]);
-            $batik2->kurangiStock(1); // Kurangi stok batik2
+                            DetailPenjualan::create([
+                                'penjualan_id' => $penjualan->id,
+                                'stock_batik_id' => $batik->id,
+                                'qty' => $qtyJual,
+                                'harga_satuan' => $batik->harga_jual,
+                                'subtotal' => $subtotal,
+                            ]);
+
+                            // Update stok batik
+                            $batik->qty_tersedia -= $qtyJual;
+                            $batik->qty_terjual += $qtyJual;
+                            $batik->save();
+                        }
+
+                        // Update total penjualan
+                        $totalBayar = $totalHarga + rand(0, 50000); // Kadang lebih bayar
+                        $penjualan->update([
+                            'total_harga' => $totalHarga,
+                            'total_bayar' => $totalBayar,
+                            'kembalian' => $totalBayar - $totalHarga,
+                        ]);
+                    }
+                }
+            }
+
+            // Generate penggunaan bahan setiap 2-4 hari sekali
+            if ($i % rand(2, 4) == 0) {
+                $availableBahans = StockBahan::where('qty_tersedia', '>', 5)
+                    ->where('tanggal_masuk', '<=', $currentDateString)
+                    ->get();
+
+                if ($availableBahans->count() > 0) {
+                    $randomBahan = $availableBahans->random();
+                    $qtyGunakan = rand(1, min(10, $randomBahan->qty_tersedia - 1));
+
+                    PenggunaanBahan::create([
+                        'stock_bahan_id' => $randomBahan->id,
+                        'qty_digunakan' => $qtyGunakan,
+                        'keperluan' => 'Produksi Kain Batik',
+                        'keterangan' => 'Digunakan untuk produksi batch ' . strtoupper(fake()->bothify('B###')),
+                        'tanggal_penggunaan' => $currentDateString,
+                        'user_id' => rand(1, 2) == 1 ? $superadmin->id : $kasir->id,
+                    ]);
+
+                    // Update stok bahan
+                    $randomBahan->qty_tersedia -= $qtyGunakan;
+                    $randomBahan->qty_terpakai += $qtyGunakan;
+                    $randomBahan->save();
+                }
+            }
         }
 
+        // Generate some current/future schedules untuk testing
+        for ($i = 1; $i <= 30; $i++) {
+            $futureDate = Carbon::today()->addDays($i);
+            $futureDateString = $futureDate->toDateString();
 
-        // // 6. Default reservasi
+            $dailySchedules = rand(2, 4);
 
+            for ($j = 0; $j < $dailySchedules; $j++) {
+                $randomPaket = $pakets[array_rand($pakets)];
+                $timeSlots = [
+                    ['start' => '09:00:00', 'end' => '11:00:00'],
+                    ['start' => '13:00:00', 'end' => '15:00:00'],
+                    ['start' => '15:30:00', 'end' => '17:30:00'],
+                    ['start' => '10:00:00', 'end' => '12:00:00'],
+                ];
+                $randomTime = $timeSlots[array_rand($timeSlots)];
 
-
-        // 7. Default stok batik
-
-
-        // // 8. Default stok bahan
-
-
-        // Simulasikan penggunaan bahan
-
-        // Update qty_tersedia bahan2 setelah penggunaan (simulasi dari controller)
-        // $bahan2->kurangiBahan(5); // ini sudah dilakukan di data bahan2 di atas
-
-
-        // // Simulasikan penjualan dari Kasir POS
-        // // Gunakan $batik1 (tersedia 15) dan $batik2 (tersedia 18)
-
+                JadwalWorkshop::create([
+                    'paket_workshop_id' => $randomPaket->id,
+                    'tanggal' => $futureDateString,
+                    'jam_mulai' => $randomTime['start'],
+                    'jam_selesai' => $randomTime['end'],
+                    'max_peserta' => $randomPaket->max_peserta,
+                    'peserta_terdaftar' => 0,
+                    'status' => 'available',
+                ]);
+            }
+        }
     }
 }
