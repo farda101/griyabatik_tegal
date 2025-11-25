@@ -23,6 +23,11 @@ class PosPenjualan extends Component
     public $qtyToAdd = 1;
 
     public $cart = [];
+<<<<<<< HEAD
+=======
+    public $nama_pembeli = 'Kasir'; // <--- Ubah dari $namaPembeli
+    public $telepon_pembeli = ''; // <--- Ubah dari $teleponPembeli
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
     public $total_bayar = 0; // <--- Ubah dari $totalBayar
     public $kembalian = 0;
     public $paymentStatusMessage = '';

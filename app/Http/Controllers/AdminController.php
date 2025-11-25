@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Session; // Pastikan Session diimport
 use Illuminate\Support\Facades\Log;
 
 use App\Exports\PenjualanReportExport; // Tambahkan ini
+use App\Exports\StockBatikExport;
+use App\Exports\ReservasiExport;
 use Maatwebsite\Excel\Facades\Excel; // Tambahkan ini
 
 class AdminController extends Controller
@@ -194,6 +196,7 @@ class AdminController extends Controller
             // Tentukan nama file dengan tanggal
             $fileName = 'laporan_penjualan';
 
+<<<<<<< HEAD
             if ($startDate && $endDate) {
                 // Jika ada start_date dan end_date, format nama file dengan rentang tanggal
                 $fileName .= '_' . Carbon::parse($startDate)->format('Ymd') . '_sd_' . Carbon::parse($endDate)->format('Ymd');
@@ -235,14 +238,20 @@ class AdminController extends Controller
 
             $fileName = 'statistik_dashboard';
 
+=======
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
             if ($startDate && $endDate) {
+                // Jika ada start_date dan end_date, format nama file dengan rentang tanggal
                 $fileName .= '_' . Carbon::parse($startDate)->format('Ymd') . '_sd_' . Carbon::parse($endDate)->format('Ymd');
             } elseif ($startDate) {
+                // Jika hanya ada start_date, format nama file dengan start_date
                 $fileName .= '_dari_' . Carbon::parse($startDate)->format('Ymd');
             } elseif ($endDate) {
+                // Jika hanya ada end_date, format nama file dengan end_date
                 $fileName .= '_sampai_' . Carbon::parse($endDate)->format('Ymd');
             }
 
+<<<<<<< HEAD
             $fileName .= '_' . Carbon::now()->format('His') . '.xlsx';
 
             return Excel::download(new StatisticsExport($startDate, $endDate), $fileName);
@@ -252,4 +261,54 @@ class AdminController extends Controller
             return redirect()->back();
         }
     }
+=======
+            // Tambahkan waktu untuk membedakan file yang diekspor
+            $fileName .= '_' . Carbon::now()->format('His') . '.xlsx';
+
+            // Jika tidak ada tanggal yang dipassing, ambil seluruh data penjualan
+            if (!$startDate && !$endDate) {
+                $startDate = null;
+                $endDate = null;
+            }
+
+            // Menggunakan PenjualanReportExport untuk mengekspor laporan
+            return Excel::download(new PenjualanReportExport($startDate, $endDate), $fileName);
+        } catch (\Exception $e) {
+            // Jika terjadi kesalahan, log error dan tampilkan pesan kesalahan
+            Log::error('Gagal mengekspor laporan penjualan: ' . $e->getMessage(), ['exception' => $e]);
+            Session::flash('error', 'Terjadi kesalahan saat mengekspor laporan penjualan: ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function exportStockReport(Request $request)
+    {
+        $fileName = 'laporan_stok_batik_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return Excel::download(new StockBatikExport, $fileName);
+    }
+    public function exportReservasiReport(Request $request)
+    {
+        try {
+            $date   = $request->input('date');
+            $status = $request->input('status');
+
+            $fileName = 'Laporan_Reservasi';
+
+            if ($date) {
+                $fileName .= '_' . Carbon::parse($date)->format('Ymd');
+            }
+            if ($status) {
+                $fileName .= '_' . ucfirst($status);
+            }
+
+            $fileName .= '_' . Carbon::now()->format('His') . '.xlsx';
+
+            // Oper data filter ke ReservasiExport (lewat constructor)
+            return Excel::download(new ReservasiExport($date, $status), $fileName);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal export: ' . $e->getMessage());
+        }
+    }
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
 }

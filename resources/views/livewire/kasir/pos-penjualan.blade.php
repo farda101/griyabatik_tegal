@@ -272,6 +272,10 @@
 </div>
 
 {{-- QR Code Scanner Script --}}
+<<<<<<< HEAD
+=======
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let qrScanner = null;

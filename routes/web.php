@@ -29,7 +29,10 @@ use App\Http\Controllers\Admin\QrCodeRegeneratorController;
 
 // Rute umum yang bisa diakses tanpa login atau untuk user publik
 // PERBAIKAN DI SINI: Arahkan root URL ke PublicController@home
+<<<<<<< HEAD
 
+=======
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
 Route::get('/user/register', [RegisterController::class, 'showRegistrationForm'])->name('register.user.form');
 Route::post('/user/register', [RegisterController::class, 'register'])->name('register.user');
 Route::get('/', [PublicController::class, 'home'])->name('home');
@@ -98,6 +101,8 @@ Route::middleware('auth')->group(function () {
 
         // --- Tambahan: Rute untuk Export Laporan Penjualan (Admin) ---
         Route::get('/admin/laporan/penjualan/export', [AdminController::class, 'exportPenjualanReport'])->name('admin.laporan.penjualan.export');
+        Route::get('/admin/laporan/reservasi/export', [AdminController::class, 'exportReservasiReport'])->name('admin.reservasi.export');
+        Route::get('/admin/stock/batik/report', [AdminController::class, 'exportStockReport'])->name('admin.stock.report');
 
         // --- Tambahan: Rute untuk Export Statistik Dashboard ---
         Route::get('/admin/statistics/export', [AdminController::class, 'exportStatistics'])->name('admin.statistics.export');
@@ -150,12 +155,15 @@ Route::middleware('auth')->group(function () {
             Route::get('{stock_batik}/download-qr', [StockBatikController::class, 'downloadQrCode'])->name('download_qr');
         });
         Route::resource('admin/stock-batik', StockBatikController::class)->names('admin.stock_batik');
+<<<<<<< HEAD
         
         // QR Code Regenerator Routes - untuk fix QR codes dari SVG ke PNG
         Route::prefix('admin/qr-code')->name('admin.qr_code.')->group(function () {
             Route::post('regenerate-all', [QrCodeRegeneratorController::class, 'regenerateAllQrCodes'])->name('regenerate_all');
             Route::post('{stock_batik}/regenerate', [QrCodeRegeneratorController::class, 'regenerateSingleQrCode'])->name('regenerate_single');
         });
+=======
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
         Route::resource(name: 'admin/motif-batik', controller: MotifBatikController::class)->names('motif_batik');
 
 

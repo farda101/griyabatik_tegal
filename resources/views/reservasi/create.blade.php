@@ -83,6 +83,7 @@
                                 @enderror
                             </div>
 
+<<<<<<< HEAD
                             <div id="package-info" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
                                 <p class="text-sm text-gray-700" id="package-info-text"></p>
                             </div>
@@ -91,6 +92,29 @@
                                 <input type="hidden" name="jenis_peserta" value="kelompok">
                             </div>
 
+=======
+                            <div class="mb-5">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Peserta <span class="text-red-500">*</span></label>
+                                <div class="flex items-center space-x-6">
+                                    <label for="jenis_peserta_individu" class="inline-flex items-center cursor-pointer">
+                                        <input type="radio" name="jenis_peserta" id="jenis_peserta_individu" value="individu"
+                                            class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 w-5 h-5"
+                                            {{ old('jenis_peserta') == 'individu' ? 'checked' : '' }} required>
+                                        <span class="ml-2 text-base text-gray-800">Individu (1 orang)</span>
+                                    </label>
+                                    <label for="jenis_peserta_kelompok" class="inline-flex items-center cursor-pointer">
+                                        <input type="radio" name="jenis_peserta" id="jenis_peserta_kelompok" value="kelompok"
+                                            class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 w-5 h-5"
+                                            {{ old('jenis_peserta') == 'kelompok' ? 'checked' : '' }} required>
+                                        <span class="ml-2 text-base text-gray-800">Kelompok</span>
+                                    </label>
+                                </div>
+                                @error('jenis_peserta')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
                             <div class="mb-5" id="jumlah_peserta_container">
                                 <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Peserta <span class="text-red-500">*</span></label>
                                 <input type="number" name="jumlah_peserta" id="jumlah_peserta"
@@ -219,6 +243,33 @@
             // Min akan di-set di calculateTotalPrice berdasarkan paket
         }
 
+        function toggleJumlahPesertaField() {
+            let jenisPeserta = '';
+            jenisPesertaRadios.forEach(radio => {
+                if (radio.checked) {
+                    jenisPeserta = radio.value;
+                }
+            });
+
+            if (jenisPeserta === 'individu') {
+                // Sembunyikan field jumlah peserta dan set value ke 1
+                jumlahPesertaContainer.style.display = 'none';
+                jumlahPesertaInput.value = 1;
+                jumlahPesertaInput.removeAttribute('required');
+                jumlahPesertaInput.setAttribute('min', '1'); // Reset min ke 1
+                jumlahPesertaInput.setCustomValidity(''); // Reset validation
+            } else if (jenisPeserta === 'kelompok') {
+                // Tampilkan field jumlah peserta dan set minimum 2
+                jumlahPesertaContainer.style.display = 'block';
+                jumlahPesertaInput.setAttribute('required', 'required');
+                jumlahPesertaInput.setAttribute('min', '2');
+                if (jumlahPesertaInput.value < 2) {
+                    jumlahPesertaInput.value = 2;
+                }
+                jumlahPesertaInput.setCustomValidity(''); // Reset validation
+            }
+        }
+
         function calculateTotalPrice() {
             const selectedJadwalOption = jadwalSelect.options[jadwalSelect.selectedIndex];
             const packageInfoDiv = document.getElementById('package-info');
@@ -278,6 +329,15 @@
 
         // Tambahkan event listener
         jadwalSelect.addEventListener('change', calculateTotalPrice);
+<<<<<<< HEAD
+=======
+        jenisPesertaRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                toggleJumlahPesertaField();
+                calculateTotalPrice();
+            });
+        });
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
         jumlahPesertaInput.addEventListener('input', calculateTotalPrice);
 
         // Inisialisasi saat halaman dimuat

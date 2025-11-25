@@ -24,33 +24,34 @@ class StockBatikController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua stok batik.
      */
-public function index(Request $request)
-{
-    $query = \App\Models\StockBatik::with('pengrajin');
+    public function index(Request $request)
+    {
+        $query = \App\Models\StockBatik::with('pengrajin');
 
-    // Search nama/kode
-    if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nama_batik', 'like', '%' . $request->search . '%')
-              ->orWhere('kode_batik', 'like', '%' . $request->search . '%');
-        });
+        // If you still want server-side filtering options (optional)
+        // You can keep these for additional filtering beyond DataTables search
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_batik', 'like', '%' . $request->search . '%')
+                    ->orWhere('kode_batik', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('tanggal_dari')) {
+            $query->whereDate('tanggal_masuk', '>=', $request->tanggal_dari);
+        }
+        if ($request->filled('tanggal_sampai')) {
+            $query->whereDate('tanggal_masuk', '<=', $request->tanggal_sampai);
+        }
+
+        // Sort default: terbaru
+        $query->orderBy('tanggal_masuk', 'desc');
+
+        // Get all results instead of paginating - DataTables will handle pagination
+        $stockBatiks = $query->get();
+
+        return view('admin.stock_batik.index', compact('stockBatiks'));
     }
-
-    // Filter tanggal masuk
-    if ($request->filled('tanggal_dari')) {
-        $query->whereDate('tanggal_masuk', '>=', $request->tanggal_dari);
-    }
-    if ($request->filled('tanggal_sampai')) {
-        $query->whereDate('tanggal_masuk', '<=', $request->tanggal_sampai);
-    }
-
-    // Sort default: terbaru
-    $query->orderBy('tanggal_masuk', 'desc');
-
-    $stockBatiks = $query->paginate(10)->withQueryString();
-
-    return view('admin.stock_batik.index', compact('stockBatiks'));
-}
 
     /**
      * Show the form for creating a new resource.
@@ -111,9 +112,7 @@ public function index(Request $request)
 
             Session::flash('success', 'Stok batik berhasil ditambahkan! Kode Batik: ' . $stockBatik->kode_batik . ' & QR Code berhasil digenerate.');
             return redirect()->route('admin.stock_batik.index');
-
-        } catch (\Exception $e) {
-            Log::error('Gagal menyimpan stok batik: ' . $e->getMessage(), ['exception' => $e, 'request_data' => $request->all()]);
+        } catch (\Exception $e){
             Session::flash('error', 'Terjadi kesalahan saat menambahkan stok batik: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
@@ -174,8 +173,8 @@ public function index(Request $request)
     {
         try {
             if ($stockBatik->qty_terjual > 0) { // Cek qty_terjual, bukan hanya exists()
-                 Session::flash('error', 'Stok batik tidak dapat dihapus karena sudah ada yang terjual.');
-                 return redirect()->back();
+                Session::flash('error', 'Stok batik tidak dapat dihapus karena sudah ada yang terjual.');
+                return redirect()->back();
             }
 
             // Hapus QR Code terkait jika ada
@@ -222,10 +221,9 @@ public function index(Request $request)
         try {
             // Memberikan nama file yang informatif
             $fileName = 'stock_batik_' . Carbon::now()->format('Ymd_His') . '.xlsx';
-            
+
             // Menggunakan Laravel Excel untuk mengunduh koleksi data
             return Excel::download(new StockBatikExport, $fileName);
-            
         } catch (\Exception $e) {
             Log::error('Gagal mengekspor data stok batik: ' . $e->getMessage(), ['exception' => $e]);
             Session::flash('error', 'Terjadi kesalahan saat mengekspor data stok batik: ' . $e->getMessage());

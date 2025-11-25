@@ -27,6 +27,16 @@
                             </svg>
                             Tambah Stok Batik
                         </a>
+<<<<<<< HEAD
+=======
+                        <a href="{{ route('admin.stock_batik.export') }}"
+                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200">
+                            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Export Excel
+                        </a>
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
                     </div>
                 </div>
             </div>
@@ -319,6 +329,7 @@
 
 {{-- DataTables CSS --}}
 @push('styles')
+<<<<<<< HEAD
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 <style>
     /* DataTables Wrapper Styling */
@@ -389,6 +400,29 @@
 
     .dataTables_wrapper > div:last-child {
         @apply mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4;
+=======
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
+<style>
+    /* Custom DataTables styling */
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        @apply border border-gray-300 rounded-lg px-3 py-2 text-sm;
+    }
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        @apply text-sm text-gray-700;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        @apply px-3 py-2 ml-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        @apply bg-blue-500 text-white border-blue-500 hover:bg-blue-600;
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
     }
 </style>
 @endpush
@@ -397,10 +431,18 @@
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<<<<<<< HEAD
 
 <script>
 $(document).ready(function() {
     const table = $('#stockBatikTable').DataTable({
+=======
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#stockBatikTable').DataTable({
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
         // Basic configuration
         pageLength: 10,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
@@ -411,17 +453,36 @@ $(document).ready(function() {
             "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
             "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
             "sInfoFiltered": "(disaring dari _MAX_ total entri)",
+<<<<<<< HEAD
+=======
+            "sInfoPostFix": "",
+            "sInfoThousands": ".",
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
             "sLengthMenu": "Tampilkan _MENU_ entri",
             "sLoadingRecords": "Sedang memuat...",
             "sProcessing": "Sedang memproses...",
             "sSearch": "Cari:",
             "sSearchPlaceholder": "Cari nama, kode, pengrajin...",
+<<<<<<< HEAD
+=======
+            "sThousands": ".",
+            "sUrl": "",
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
             "sZeroRecords": "Tidak ditemukan data yang sesuai",
             "oPaginate": {
                 "sFirst": "Pertama",
                 "sLast": "Terakhir",
+<<<<<<< HEAD
                 "sNext": "Berikutnya",
                 "sPrevious": "Sebelumnya"
+=======
+                "sNext": "Selanjutnya",
+                "sPrevious": "Sebelumnya"
+            },
+            "oAria": {
+                "sSortAscending": ": aktifkan untuk mengurutkan kolom secara ascending",
+                "sSortDescending": ": aktifkan untuk mengurutkan kolom secara descending"
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
             }
         },
         
@@ -430,6 +491,7 @@ $(document).ready(function() {
             {
                 targets: 0, // No column
                 orderable: false,
+<<<<<<< HEAD
                 searchable: false,
                 width: '5%'
             },
@@ -458,12 +520,27 @@ $(document).ready(function() {
                 targets: 6, // Tanggal Masuk
                 type: 'date',
                 width: '12%'
+=======
+                searchable: false
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
             },
             {
                 targets: -1, // Action column
                 orderable: false,
+<<<<<<< HEAD
                 searchable: false,
                 width: '16%'
+=======
+                searchable: false
+            },
+            {
+                targets: 4, // Harga Jual column
+                type: 'num'
+            },
+            {
+                targets: 6, // Tanggal Masuk column
+                type: 'date'
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
             }
         ],
         
@@ -476,6 +553,7 @@ $(document).ready(function() {
         // Custom search delay
         searchDelay: 500,
         
+<<<<<<< HEAD
         // DOM layout - improved
         dom: '<"flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4"<"flex flex-col sm:flex-row gap-2"l><"w-full sm:w-auto"f>>rt<"flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mt-4"<"text-sm text-gray-600"i><"flex gap-2"p>>',
         
@@ -547,6 +625,18 @@ function exportWithFilter() {
     // Redirect ke export URL
     window.location.href = url;
 }
+=======
+        // DOM layout
+        dom: '<"flex flex-col sm:flex-row justify-between items-center mb-4"lf>rt<"flex flex-col sm:flex-row justify-between items-center mt-4"ip>',
+        
+        // Custom initialization
+        initComplete: function() {
+            // Add custom styling after initialization
+            $('.dataTables_filter input').attr('placeholder', 'Cari nama, kode, pengrajin...');
+        }
+    });
+});
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
 </script>
 @endpush
 @endsection

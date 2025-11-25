@@ -342,6 +342,7 @@
                         <x-responsive-nav-link :href="route('kasir.laporan.reservasi.index')" :active="request()->routeIs('kasir.laporan.reservasi.*')" class="text-white hover:bg-blue-700 hover:text-white text-sm font-medium py-2">
                             {{ __('Laporan Reservasi') }}
                         </x-responsive-nav-link>
+<<<<<<< HEAD
                         @if (Auth::user()->isSuperadmin)
                             <div class="my-2 border-t border-blue-400"></div>
                             <x-responsive-nav-link :href="route('admin.laporan_keuangan.pemasukan')" :active="request()->routeIs('admin.laporan_keuangan.pemasukan')" class="text-white hover:bg-blue-700 hover:text-white text-sm font-medium py-2">
@@ -351,6 +352,8 @@
                                 {{ __('💰 Laporan Pengeluaran') }}
                             </x-responsive-nav-link>
                         @endif
+=======
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
                     </div>
                 </div>
             @endif {{-- End Mobile Kasir/Superadmin Only --}}

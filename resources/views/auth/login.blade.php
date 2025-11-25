@@ -14,7 +14,11 @@
             <!-- Catatan Pengguna -->
             <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded text-sm text-blue-800">
                 <strong>Catatan:</strong><br>
+<<<<<<< HEAD
                 Jika Anda belum memiliki akun, silakan lakukan <a href="{{ route('register') }}" class="text-indigo-600 underline font-semibold">registrasi akun</a> terlebih dahulu. Akun Anda akan dibuat otomatis.
+=======
+                Jika Anda belum memiliki akun, silakan lakukan <a href="{{ route('register.user.form') }}" class="text-indigo-600 underline font-semibold">registrasi akun</a> terlebih dahulu. Akun Anda akan dibuat otomatis.
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
             </div>
 
             <!-- Login Card -->

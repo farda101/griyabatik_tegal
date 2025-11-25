@@ -51,7 +51,10 @@ class ReservasiController extends Controller
             });
         }
 
+<<<<<<< HEAD
         // Urutkan berdasarkan tanggal reservasi terbaru (created_at desc)
+=======
+>>>>>>> 903583dba47c81235784b0eb5f8c2866eaef41f8
         $reservasis = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.reservasi.index', compact('reservasis'));
