@@ -22,39 +22,40 @@ class ReservasiController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua reservasi untuk admin.
      */
-public function index(Request $request)
-{
-    $query = \App\Models\Reservasi::with(['jadwalWorkshop.paketWorkshop']);
+    public function index(Request $request)
+    {
+        $query = \App\Models\Reservasi::with(['jadwalWorkshop.paketWorkshop']);
 
-    // Pencarian
-    if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nama_pemesan', 'like', '%' . $request->search . '%')
-              ->orWhere('nomor_reservasi', 'like', '%' . $request->search . '%');
-        });
+        // Pencarian
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_pemesan', 'like', '%' . $request->search . '%')
+                    ->orWhere('nomor_reservasi', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter status pembayaran
+        if ($request->filled('status')) {
+            $query->where('status_pembayaran', $request->status);
+        }
+
+        // Filter tanggal workshop
+        if ($request->filled('tanggal_dari') || $request->filled('tanggal_sampai')) {
+            $query->whereHas('jadwalWorkshop', function ($q) use ($request) {
+                if ($request->filled('tanggal_dari')) {
+                    $q->whereDate('tanggal', '>=', $request->tanggal_dari);
+                }
+                if ($request->filled('tanggal_sampai')) {
+                    $q->whereDate('tanggal', '<=', $request->tanggal_sampai);
+                }
+            });
+        }
+
+        // Urutkan berdasarkan tanggal reservasi terbaru (created_at desc)
+        $reservasis = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        return view('admin.reservasi.index', compact('reservasis'));
     }
-
-    // Filter status pembayaran
-    if ($request->filled('status')) {
-        $query->where('status_pembayaran', $request->status);
-    }
-
-    // Filter tanggal workshop
-    if ($request->filled('tanggal_dari') || $request->filled('tanggal_sampai')) {
-        $query->whereHas('jadwalWorkshop', function ($q) use ($request) {
-            if ($request->filled('tanggal_dari')) {
-                $q->whereDate('tanggal', '>=', $request->tanggal_dari);
-            }
-            if ($request->filled('tanggal_sampai')) {
-                $q->whereDate('tanggal', '<=', $request->tanggal_sampai);
-            }
-        });
-    }
-
-    $reservasis = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-
-    return view('admin.reservasi.index', compact('reservasis'));
-}
     /**
      * Show the form for creating a new resource.
      * Tidak diperlukan untuk admin karena reservasi dibuat dari sisi publik.
@@ -81,7 +82,7 @@ public function index(Request $request)
      * @param  \App\Models\Reservasi  $reservasi
      */
 
-    
+
     public function show(Reservasi $reservasi)
     {
         // Eager load relasi untuk detail tampilan
@@ -157,7 +158,7 @@ public function index(Request $request)
                 // Pastikan $reservasi->telepon_pemesan tidak mengandung tanda '+' saat disimpan
                 // Nomor telepon harus dimulai dengan kode negara (misal 62)
                 $phoneNumberClean = ltrim($reservasi->telepon_pemesan, '+'); // Hapus '+' jika ada
-                $message = "Halo {$reservasi->nama_pemesan},\n\nPembayaran reservasi Anda dengan nomor {$reservasi->nomor_reservasi} untuk workshop '{$reservasi->jadwalWorkshop->paketWorkshop->nama_paket}' pada tanggal {$reservasi->jadwalWorkshop->tanggal->format('d M Y')} pukul {$reservasi->jadwalWorkshop->jam_mulai->format('H:i')} telah LUNAS.\n\nSampai jumpa di workshop!\nWorkshop Batik Tegalan";
+                $message = "Halo {$reservasi->nama_pemesan},\n\nPembayaran reservasi Anda dengan nomor {$reservasi->nomor_reservasi} untuk workshop '{$reservasi->jadwalWorkshop->paketWorkshop->nama_paket}' pada tanggal {$reservasi->jadwalWorkshop->tanggal->format('d M Y')} pukul {$reservasi->jadwalWorkshop->jam_mulai->format('H:i')} telah LUNAS.\n\nSampai jumpa di workshop!\nWorkshop Wastra Tegalan";
                 SendWhatsAppNotification::dispatch($phoneNumberClean, $message, $reservasi->id);
                 // --- Akhir Pemicu Notifikasi ---
 
@@ -175,7 +176,6 @@ public function index(Request $request)
             DB::commit();
 
             return redirect()->route('admin.reservasi.index');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Gagal memperbarui reservasi oleh admin: ' . $e->getMessage(), ['exception' => $e, 'request_data' => $request->all()]);
@@ -209,7 +209,6 @@ public function index(Request $request)
 
             Session::flash('success', 'Reservasi berhasil dihapus!');
             return redirect()->route('admin.reservasi.index');
-
         } catch (\Exception $e) {
             Log::error('Gagal menghapus reservasi oleh admin: ' . $e->getMessage(), ['exception' => $e]);
             Session::flash('error', 'Terjadi kesalahan saat menghapus reservasi: ' . $e->getMessage());
@@ -237,8 +236,8 @@ public function index(Request $request)
         Session::flash('error', 'File permohonan tidak ditemukan.');
         return redirect()->back();
     }
-    
-     /**
+
+    /**
      * Export reservation data to Excel.
      * Mengunduh data reservasi ke file Excel.
      *
@@ -248,9 +247,8 @@ public function index(Request $request)
     {
         try {
             $fileName = 'reservasi_data_' . Carbon::now()->format('Ymd_His') . '.xlsx';
-            
+
             return Excel::download(new ReservasiExport, $fileName);
-            
         } catch (\Exception $e) {
             Log::error('Gagal mengekspor data reservasi: ' . $e->getMessage(), ['exception' => $e]);
             Session::flash('error', 'Terjadi kesalahan saat mengekspor data reservasi: ' . $e->getMessage());

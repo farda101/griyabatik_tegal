@@ -6,9 +6,19 @@ use App\Models\StockBatik;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings; // Tambahkan ini untuk header kolom
 use Maatwebsite\Excel\Concerns\WithMapping;  // Tambahkan ini untuk memformat data
+use Carbon\Carbon;
 
 class StockBatikExport implements FromCollection, WithHeadings, WithMapping
 {
+    protected $tanggalDari;
+    protected $tanggalSampai;
+
+    public function __construct($tanggalDari = null, $tanggalSampai = null)
+    {
+        $this->tanggalDari = $tanggalDari;
+        $this->tanggalSampai = $tanggalSampai;
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
@@ -16,7 +26,17 @@ class StockBatikExport implements FromCollection, WithHeadings, WithMapping
     {
         // Ambil semua data StockBatik yang ingin diekspor
         // Eager load relasi 'pengrajin' untuk mendapatkan nama pengrajin
-        return StockBatik::with('pengrajin')->get();
+        $query = StockBatik::with('pengrajin');
+
+        // Terapkan filter tanggal jika ada
+        if ($this->tanggalDari) {
+            $query->whereDate('tanggal_masuk', '>=', $this->tanggalDari);
+        }
+        if ($this->tanggalSampai) {
+            $query->whereDate('tanggal_masuk', '<=', $this->tanggalSampai);
+        }
+
+        return $query->orderBy('tanggal_masuk', 'desc')->get();
     }
 
     /**

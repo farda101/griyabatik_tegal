@@ -124,18 +124,28 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
-                        <label for="motif" class="block text-sm font-medium text-gray-700 mb-1">Motif (Opsional)</label>
-                        <input type="text" name="motif" id="motif"
+                        <label for="motif" class="block text-sm font-medium text-gray-700 mb-1">Motif</label>
+                        <select name="motif" id="motif"
                             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
-                                @error('motif') border-red-500 @enderror"
-                            value="{{ old('motif', $stockBatik->motif) }}" maxlength="100" placeholder="Contoh: Parang, Kawung">
+                                @error('motif') border-red-500 @enderror">
+                            <option value="">-- Pilih Motif --</option>
+                            <option value="Cempaka" {{ old('motif', $stockBatik->motif) == 'Cempaka' ? 'selected' : '' }}>Cempaka</option>
+                            <option value="Gribigan" {{ old('motif', $stockBatik->motif) == 'Gribigan' ? 'selected' : '' }}>Gribigan</option>
+                            <option value="Galaran" {{ old('motif', $stockBatik->motif) == 'Galaran' ? 'selected' : '' }}>Galaran</option>
+                            <option value="Beras Mawur" {{ old('motif', $stockBatik->motif) == 'Beras Mawur' ? 'selected' : '' }}>Beras Mawur</option>
+                            <option value="Mata Deruk" {{ old('motif', $stockBatik->motif) == 'Mata Deruk' ? 'selected' : '' }}>Mata Deruk</option>
+                            <option value="Tumbar Bolong" {{ old('motif', $stockBatik->motif) == 'Tumbar Bolong' ? 'selected' : '' }}>Tumbar Bolong</option>
+                            <option value="Kuku Macan" {{ old('motif', $stockBatik->motif) == 'Kuku Macan' ? 'selected' : '' }}>Kuku Macan</option>
+                            <option value="Semut Runtung" {{ old('motif', $stockBatik->motif) == 'Semut Runtung' ? 'selected' : '' }}>Semut Runtung</option>
+                            <option value="Benang Pedhot" {{ old('motif', $stockBatik->motif) == 'Benang Pedhot' ? 'selected' : '' }}>Benang Pedhot</option>
+                        </select>
                         @error('motif')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="ukuran" class="block text-sm font-medium text-gray-700 mb-1">Ukuran (Opsional)</label>
+                        <label for="ukuran" class="block text-sm font-medium text-gray-700 mb-1">Ukuran</label>
                         <input type="text" name="ukuran" id="ukuran"
                             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
                                 @error('ukuran') border-red-500 @enderror"

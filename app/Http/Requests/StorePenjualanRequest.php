@@ -24,10 +24,8 @@ class StorePenjualanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Pastikan nama properti di Livewire ($nama_pembeli, $telepon_pembeli, $cart, $total_bayar)
+            // Pastikan nama properti di Livewire ($cart, $total_bayar)
             // cocok dengan nama rules di sini.
-            'nama_pembeli' => 'nullable|string|max:255',
-            'telepon_pembeli' => 'nullable|string|max:20|regex:/^[0-9\-\(\)\s\+]+$/',
             'cart' => 'required|array|min:1', // Livewire property $cart akan di-map ke 'items'
             'cart.*.kode_batik' => 'required|string|exists:stock_batiks,kode_batik',
             'cart.*.qty' => 'required|integer|min:1',

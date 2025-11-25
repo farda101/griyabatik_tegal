@@ -319,8 +319,139 @@
             </div>
         </div>
 
-        ---
-        
+        {{-- Charts and Analytics Section --}}
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <div class="flex items-center">
+                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg mr-3">
+                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Diagram & Analitik</h2>
+                </div>
+                <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-3">
+                    <form method="GET" action="{{ route('admin.dashboard') }}" class="flex flex-col sm:flex-row gap-3">
+                        <div class="flex flex-col">
+                            <label for="start_date" class="text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                            <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" 
+                                   class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="end_date" class="text-sm font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                            <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" 
+                                   class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition duration-200">
+                                Filter
+                            </button>
+                            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition duration-200">
+                                Reset
+                            </a>
+                        </div>
+                    </form>
+                    <a href="{{ route('admin.statistics.export', request()->only(['start_date', 'end_date'])) }}" 
+                       class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition duration-200 flex items-center">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Export Data
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                {{-- Monthly Sales Chart --}}
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Penjualan Bulanan (12 Bulan Terakhir)</h3>
+                    <canvas id="monthlySalesChart" width="400" height="200"></canvas>
+                </div>
+
+                {{-- Reservation Status Chart --}}
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Status Reservasi</h3>
+                    <canvas id="reservationStatusChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            {{-- Daily Sales Chart --}}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 p-6 border border-gray-100 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Penjualan Harian (7 Hari Terakhir)</h3>
+                <canvas id="dailySalesChart" width="800" height="200"></canvas>
+            </div>
+        </div>
+
+        {{-- Short Reports Section --}}
+        <div class="mb-8">
+            <div class="flex items-center mb-6">
+                <div class="bg-gradient-to-r from-orange-500 to-red-500 p-2 rounded-lg mr-3">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Laporan Singkat</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {{-- Recent Reservations --}}
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="h-5 w-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Reservasi Terbaru
+                    </h3>
+                    <div class="space-y-3">
+                        @forelse($recentReservations as $reservasi)
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">{{ $reservasi->nama_pemesan }}</p>
+                                    <p class="text-xs text-gray-600">{{ $reservasi->jadwalWorkshop->paketWorkshop->nama_paket ?? 'N/A' }}</p>
+                                    <p class="text-xs text-gray-500">{{ $reservasi->created_at->format('d M Y H:i') }}</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                    @if($reservasi->status_pembayaran === 'paid') bg-green-100 text-green-800
+                                    @elseif($reservasi->status_pembayaran === 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif($reservasi->status_pembayaran === 'expired') bg-gray-100 text-gray-800
+                                    @else bg-red-100 text-red-800 @endif">
+                                    {{ ucfirst($reservasi->status_pembayaran) }}
+                                </span>
+                            </div>
+                        @empty
+                            <p class="text-gray-500 text-sm">Belum ada reservasi terbaru.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                {{-- Recent Sales --}}
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Penjualan Terbaru
+                    </h3>
+                    <div class="space-y-3">
+                        @forelse($recentSales as $penjualan)
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Transaksi #{{ $penjualan->id }}</p>
+                                    <p class="text-xs text-gray-600">{{ $penjualan->detailPenjualans->count() }} item terjual</p>
+                                    <p class="text-xs text-gray-500">{{ $penjualan->tanggal_penjualan->format('d M Y H:i') }}</p>
+                                </div>
+                                <span class="text-sm font-bold text-green-600">
+                                    Rp {{ number_format($penjualan->total_harga, 0, ',', '.') }}
+                                </span>
+                            </div>
+                        @empty
+                            <p class="text-gray-500 text-sm">Belum ada penjualan terbaru.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Quick Actions Section --}}
         <div class="mb-8">
             <div class="flex items-center mb-6">
@@ -394,7 +525,109 @@
 </div>
 @endsection
 
-{{-- No need for Font Awesome CDN if using Heroicons SVG directly --}}
-{{-- @push('scripts')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlalTjs/P4V9+q/k3S2C6y1i4y1tQ6k8+V5vA3r5q3r5p5q5r5s5t5u5v5w5x5y5z5A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-@endpush --}}
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Monthly Sales Chart
+    const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
+    new Chart(monthlySalesCtx, {
+        type: 'line',
+        data: {
+            labels: @json($monthlyLabels),
+            datasets: [{
+                label: 'Penjualan (Rp)',
+                data: @json($monthlySales),
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Reservation Status Chart
+    const reservationStatusCtx = document.getElementById('reservationStatusChart').getContext('2d');
+    new Chart(reservationStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'Lunas', 'Gagal', 'Kadaluarsa'],
+            datasets: [{
+                data: [
+                    @json($reservationStatuses['pending']),
+                    @json($reservationStatuses['paid']),
+                    @json($reservationStatuses['failed']),
+                    @json($reservationStatuses['expired'])
+                ],
+                backgroundColor: [
+                    'rgb(245, 158, 11)', // yellow for pending
+                    'rgb(34, 197, 94)',  // green for paid
+                    'rgb(239, 68, 68)',  // red for failed
+                    'rgb(156, 163, 175)' // gray for expired
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Daily Sales Chart
+    const dailySalesCtx = document.getElementById('dailySalesChart').getContext('2d');
+    new Chart(dailySalesCtx, {
+        type: 'bar',
+        data: {
+            labels: @json($dailyLabels),
+            datasets: [{
+                label: 'Penjualan Harian (Rp)',
+                data: @json($dailySales),
+                backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                borderColor: 'rgb(34, 197, 94)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+@endpush

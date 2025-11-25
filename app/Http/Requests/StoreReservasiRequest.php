@@ -24,14 +24,17 @@ class StoreReservasiRequest extends FormRequest
      */
     public function rules(): array
     {
+        $jadwal = \App\Models\JadwalWorkshop::with('paketWorkshop')->find($this->jadwal_workshop_id);
+        $minParticipants = $jadwal ? $jadwal->paketWorkshop->min_participants : 1;
+        $maxParticipants = $jadwal ? $jadwal->paketWorkshop->max_peserta : 100; // fallback
+
         return [
             'jadwal_workshop_id' => 'required|exists:jadwal_workshops,id', // Harus ada di tabel jadwal_workshops
-            'jenis_peserta' => ['required', Rule::in(['individu', 'kelompok'])],
-            'jumlah_peserta' => 'required|integer|min:1',
+            'jenis_peserta' => ['required', Rule::in(['kelompok'])],
+            'jumlah_peserta' => "required|integer|min:$minParticipants|max:$maxParticipants",
             'nama_pemesan' => 'required|string|max:255',
             'email_pemesan' => 'required|email|max:255',
             'password' => Rule::requiredIf(!Auth::check()),
-            'telepon_pemesan' => 'required|string|max:20|regex:/^[0-9\-\(\)\s\+]+$/',
             'alamat_pemesan' => 'nullable|string|max:500',
             'file_permohonan' => 'nullable|file|mimes:pdf,doc,docx|max:2048', // Contoh: PDF/DOC maksimal 2MB
         ];
@@ -57,9 +60,6 @@ class StoreReservasiRequest extends FormRequest
             'email_pemesan.required' => 'Email pemesan wajib diisi.',
             'email_pemesan.email' => 'Format email pemesan tidak valid.',
             'email_pemesan.max' => 'Email pemesan maksimal 255 karakter.',
-            'telepon_pemesan.required' => 'Telepon pemesan wajib diisi.',
-            'telepon_pemesan.max' => 'Telepon pemesan maksimal 20 karakter.',
-            'telepon_pemesan.regex' => 'Format telepon pemesan tidak valid.',
             'alamat_pemesan.max' => 'Alamat pemesan maksimal 500 karakter.',
             'file_permohonan.file' => 'File permohonan harus berupa file.',
             'file_permohonan.mimes' => 'Format file permohonan harus PDF, DOC, atau DOCX.',

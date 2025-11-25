@@ -78,7 +78,14 @@
                         required>
                         <option value="">-- Pilih Paket Workshop --</option>
                         @foreach ($paketWorkshops as $paket)
-                            <option value="{{ $paket->id }}" {{ old('paket_workshop_id') == $paket->id ? 'selected' : '' }}>
+                            <option value="{{ $paket->id }}" 
+                                data-max="{{ $paket->max_peserta }}" 
+                                data-duration="{{ $paket->duration_days }}" 
+                                data-harga="{{ $paket->harga_individu }}" 
+                                data-durasi="{{ $paket->durasi_menit }}" 
+                                data-min="{{ $paket->min_participants }}" 
+                                data-max-days="{{ $paket->max_reservation_days }}" 
+                                {{ old('paket_workshop_id') == $paket->id ? 'selected' : '' }}>
                                 {{ $paket->nama_paket }} (Rp {{ number_format($paket->harga_individu, 0, ',', '.') }})
                             </option>
                         @endforeach
@@ -103,9 +110,8 @@
                     <div>
                         <label for="max_peserta" class="block text-sm font-medium text-gray-700 mb-1">Maksimal Peserta</label>
                         <input type="number" name="max_peserta" id="max_peserta"
-                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
-                                @error('max_peserta') border-red-500 @enderror"
-                            value="{{ old('max_peserta') }}" required min="1" max="100" placeholder="Contoh: 20">
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 bg-gray-100"
+                            value="{{ old('max_peserta') }}" required min="1" max="100" placeholder="Contoh: 20" readonly>
                         @error('max_peserta')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -127,9 +133,8 @@
                     <div>
                         <label for="jam_selesai" class="block text-sm font-medium text-gray-700 mb-1">Jam Selesai</label>
                         <input type="time" name="jam_selesai" id="jam_selesai"
-                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
-                                @error('jam_selesai') border-red-500 @enderror"
-                            value="{{ old('jam_selesai') }}" required>
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 bg-gray-100"
+                            value="{{ old('jam_selesai') }}" required readonly>
                         @error('jam_selesai')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -167,4 +172,33 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('paket_workshop_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const maxPeserta = selectedOption.getAttribute('data-max');
+    const duration = parseInt(selectedOption.getAttribute('data-duration')) || 1;
+    if (maxPeserta) {
+        document.getElementById('max_peserta').value = maxPeserta;
+    }
+    // Auto-fill jam_selesai based on jam_mulai + duration * 8 hours
+    const jamMulai = document.getElementById('jam_mulai').value;
+    if (jamMulai) {
+        const [hours, minutes] = jamMulai.split(':').map(Number);
+        const totalMinutes = hours * 60 + minutes + duration * 8 * 60;
+        const endHours = Math.floor(totalMinutes / 60) % 24;
+        const endMinutes = totalMinutes % 60;
+        const jamSelesai = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+        document.getElementById('jam_selesai').value = jamSelesai;
+    }
+});
+
+// Also trigger on jam_mulai change
+document.getElementById('jam_mulai').addEventListener('change', function() {
+    const paketSelect = document.getElementById('paket_workshop_id');
+    if (paketSelect.value) {
+        paketSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
 @endsection

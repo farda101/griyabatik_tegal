@@ -10,7 +10,7 @@
                 <h1 class="font-bold text-3xl mb-2">
                     Galeri Keindahan Batik
                 </h1>
-                <p class="text-green-100 text-lg">Jelajahi ragam motif dan pesona visual batik Tegalan.</p>
+                <p class="text-green-100 text-lg">Jelajahi ragam motif dan pesona visual Wastra Tegalan.</p>
             </div>
 
             <div class="p-8">

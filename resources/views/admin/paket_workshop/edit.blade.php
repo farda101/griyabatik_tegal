@@ -141,6 +141,41 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div>
+                        <label for="min_participants" class="block text-sm font-medium text-gray-700 mb-1">Minimal Peserta</label>
+                        <input type="number" name="min_participants" id="min_participants"
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
+                                @error('min_participants') border-red-500 @enderror"
+                            value="{{ old('min_participants', $paketWorkshop->min_participants ?? 1) }}" required min="1" max="100" placeholder="Contoh: 5">
+                        @error('min_participants')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="duration_days" class="block text-sm font-medium text-gray-700 mb-1">Durasi (Hari)</label>
+                        <input type="number" name="duration_days" id="duration_days"
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
+                                @error('duration_days') border-red-500 @enderror"
+                            value="{{ old('duration_days', $paketWorkshop->duration_days ?? 1) }}" required min="1" max="30" placeholder="Contoh: 1">
+                        @error('duration_days')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="max_reservation_days" class="block text-sm font-medium text-gray-700 mb-1">Maksimal Hari Reservasi</label>
+                        <input type="number" name="max_reservation_days" id="max_reservation_days"
+                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5
+                                @error('max_reservation_days') border-red-500 @enderror"
+                            value="{{ old('max_reservation_days', $paketWorkshop->max_reservation_days ?? 3) }}" required min="1" max="30" placeholder="Contoh: 3">
+                        @error('max_reservation_days')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="mt-6 flex items-center">
                     <input type="hidden" name="is_active" value="0">
                     <input type="checkbox" name="is_active" id="is_active" value="1"

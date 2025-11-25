@@ -15,6 +15,10 @@ class PaketWorkshop extends Model
         'harga_kelompok',
         'durasi_menit',
         'max_peserta',
+        'min_participants',
+        'max_participants',
+        'duration_days',
+        'max_reservation_days',
         'is_active',
     ];
 
@@ -25,6 +29,10 @@ class PaketWorkshop extends Model
             'harga_kelompok' => 'decimal:2',
             'durasi_menit' => 'integer',
             'max_peserta' => 'integer',
+            'min_participants' => 'integer',
+            'max_participants' => 'integer',
+            'duration_days' => 'integer',
+            'max_reservation_days' => 'integer',
             'is_active' => 'boolean',
         ];
     }

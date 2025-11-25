@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;     // Tambahkan baris ini!
 use App\Services\MidtransService;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationConfirmation;
 
 class ReservasiController extends Controller
 {
@@ -37,6 +39,9 @@ class ReservasiController extends Controller
             ->available() // Gunakan scope 'available' dari model JadwalWorkshop
             ->where('peserta_terdaftar', '<', DB::raw('max_peserta')) // Perbaikan: Gunakan DB::raw
             ->where('tanggal', '>=', now()->toDateString()) // Hanya jadwal hari ini atau di masa depan
+            ->whereHas('paketWorkshop', function($query) {
+                $query->whereRaw('jadwal_workshops.tanggal >= DATE_ADD(CURDATE(), INTERVAL paket_workshops.max_reservation_days DAY)');
+            })
             ->orderBy('tanggal')
             ->orderBy('jam_mulai')
             ->get();
@@ -62,7 +67,7 @@ class ReservasiController extends Controller
      * @param  \App\Http\Requests\StoreReservasiRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-        /**
+    /**
      * Menampilkan daftar reservasi milik user yang sedang login.
      * Hanya user yang sudah login bisa mengakses.
      */
@@ -81,7 +86,7 @@ class ReservasiController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nomor_reservasi', 'like', '%' . $request->search . '%')
-                  ->orWhere('nama_pemesan', 'like', '%' . $request->search . '%');
+                    ->orWhere('nama_pemesan', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -115,7 +120,7 @@ class ReservasiController extends Controller
             if (!$paket) {
                 throw new \Exception("Paket workshop tidak ditemukan untuk jadwal yang dipilih.");
             }
-            $hargaPerPeserta = ($data['jenis_peserta'] === 'individu') ? $paket->harga_individu : $paket->harga_kelompok;
+            $hargaPerPeserta = $paket->harga_kelompok;
             $data['total_harga'] = $hargaPerPeserta * $data['jumlah_peserta'];
 
             // Status pembayaran awal selalu 'pending'
@@ -138,6 +143,14 @@ class ReservasiController extends Controller
             $data['user_id'] = Auth::User()->id;
 
             $reservasi = Reservasi::create($data);
+
+            // Kirim email konfirmasi reservasi
+            try {
+                Mail::to($reservasi->email_pemesan)->send(new ReservationConfirmation($reservasi));
+            } catch (\Exception $e) {
+                // Log error email tapi jangan gagal proses reservasi
+                Log::error('Gagal mengirim email konfirmasi reservasi: ' . $e->getMessage(), ['reservasi_id' => $reservasi->id]);
+            }
 
             // Logika updatePesertaTerdaftar TIDAK dipanggil di sini karena status masih 'pending'.
 
@@ -211,12 +224,13 @@ class ReservasiController extends Controller
         return view('reservasi.payment_instructions', compact('reservasi', 'snapToken'));
     }
 
-    public function handlePaymentSuccess(Request $request, Reservasi $reservasi) {
+    public function handlePaymentSuccess(Request $request, Reservasi $reservasi)
+    {
         $midtransResponse = $request->input('data');
         // $midtransResponse = $request->data;
         $reservasi->handleReservationPaymentSuccess($midtransResponse);
         return response()->json(([
-            'redirect'=>route('reservasi.status.check.form')
+            'redirect' => route('reservasi.my')
         ]));
     }
 }

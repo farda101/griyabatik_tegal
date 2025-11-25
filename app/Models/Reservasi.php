@@ -25,6 +25,7 @@ class Reservasi extends Model
         'midtrans_transaction_id',
         'midtrans_response',
         'paid_at',
+        'payment_deadline',
         'reminder_sent',
         'user_id',
         'midtrans_snap_token'
@@ -36,6 +37,7 @@ class Reservasi extends Model
             'jumlah_peserta' => 'integer',
             'total_harga' => 'decimal:2',
             'paid_at' => 'datetime',
+            'payment_deadline' => 'datetime',
             'reminder_sent' => 'boolean',
             'midtrans_response' => 'array',
         ];
@@ -157,6 +159,11 @@ class Reservasi extends Model
         static::creating(function ($model) {
             if (empty($model->nomor_reservasi)) {
                 $model->nomor_reservasi = static::generateNomorReservasi();
+            }
+            
+            // Set payment deadline to 24 hours from creation
+            if (empty($model->payment_deadline)) {
+                $model->payment_deadline = now()->addHours(24);
             }
         });
     }

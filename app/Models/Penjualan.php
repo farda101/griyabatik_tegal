@@ -11,8 +11,6 @@ class Penjualan extends Model
     protected $fillable = [
         'nomor_nota',
         'kasir_id',
-        'nama_pembeli',
-        'telepon_pembeli',
         'total_harga',
         'total_bayar',
         'kembalian',

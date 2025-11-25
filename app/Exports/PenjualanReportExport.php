@@ -22,19 +22,25 @@ class PenjualanReportExport implements FromCollection, WithHeadings, WithMapping
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik']);
 
-        if ($this->startDate) {
-            $query->whereDate('tanggal_penjualan', '>=', $this->startDate);
+        // Only apply date filters if they are provided
+        if ($this->startDate && $this->endDate) {
+            // Both dates provided - filter between dates
+            $query->whereBetween('tanggal_penjualan', [$this->startDate, $this->endDate]);
+        } elseif ($this->startDate) {
+            // Only start date provided - filter from start date onwards
+            $query->where('tanggal_penjualan', '>=', $this->startDate);
+        } elseif ($this->endDate) {
+            // Only end date provided - filter up to end date
+            $query->where('tanggal_penjualan', '<=', $this->endDate);
         }
-
-        if ($this->endDate) {
-            $query->whereDate('tanggal_penjualan', '<=', $this->endDate);
-        }
+        // If neither startDate nor endDate is provided, no date filter is applied
+        // This will return all records in the database
 
         return $query->latest('tanggal_penjualan')->get();
     }
@@ -49,7 +55,6 @@ class PenjualanReportExport implements FromCollection, WithHeadings, WithMapping
             'Nomor Nota',
             'Tanggal Penjualan',
             'Kasir',
-            'Nama Pembeli',
             'Telepon Pembeli',
             'Total Harga',
             'Total Dibayar',
@@ -86,7 +91,6 @@ class PenjualanReportExport implements FromCollection, WithHeadings, WithMapping
             $penjualan->nomor_nota,
             $penjualan->tanggal_penjualan->format('Y-m-d H:i:s'),
             $penjualan->kasir->name ?? 'N/A',
-            $penjualan->nama_pembeli,
             $penjualan->telepon_pembeli ?? '-',
             number_format($penjualan->total_harga, 0, ',', '.'),
             number_format($penjualan->total_bayar, 0, ',', '.'),

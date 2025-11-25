@@ -8,7 +8,7 @@
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white text-center">
                 <h2 class="font-bold text-3xl mb-2">
-                    Daftar Workshop Batik Tegalan
+                    Daftar Workshop Wastra Tegalan
                 </h2>
                 <p class="text-indigo-100 text-lg">Isi formulir di bawah untuk reservasi tempat Anda!</p>
             </div>
@@ -58,6 +58,10 @@
                                                 <option value="{{ $jadwal->id }}"
                                                     data-harga-individu="{{ $jadwal->paketWorkshop->harga_individu }}"
                                                     data-harga-kelompok="{{ $jadwal->paketWorkshop->harga_kelompok }}"
+                                                    data-min-participants="{{ $jadwal->paketWorkshop->min_participants }}"
+                                                    data-max-participants="{{ $jadwal->paketWorkshop->max_peserta }}"
+                                                    data-duration-days="{{ $jadwal->paketWorkshop->duration_days }}"
+                                                    data-max-reservation-days="{{ $jadwal->paketWorkshop->max_reservation_days }}"
                                                     {{ old('jadwal_workshop_id') == $jadwal->id ? 'selected' : '' }}>
                                                     {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                                                     ({{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }})
@@ -79,33 +83,20 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-5">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Peserta <span class="text-red-500">*</span></label>
-                                <div class="flex items-center space-x-6">
-                                    <label for="jenis_peserta_individu" class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" name="jenis_peserta" id="jenis_peserta_individu" value="individu"
-                                            class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 w-5 h-5"
-                                            {{ old('jenis_peserta') == 'individu' ? 'checked' : '' }} required>
-                                        <span class="ml-2 text-base text-gray-800">Individu</span>
-                                    </label>
-                                    <label for="jenis_peserta_kelompok" class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" name="jenis_peserta" id="jenis_peserta_kelompok" value="kelompok"
-                                            class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 w-5 h-5"
-                                            {{ old('jenis_peserta') == 'kelompok' ? 'checked' : '' }} required>
-                                        <span class="ml-2 text-base text-gray-800">Kelompok</span>
-                                    </label>
-                                </div>
-                                @error('jenis_peserta')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                            <div id="package-info" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                                <p class="text-sm text-gray-700" id="package-info-text"></p>
                             </div>
 
                             <div class="mb-5">
+                                <input type="hidden" name="jenis_peserta" value="kelompok">
+                            </div>
+
+                            <div class="mb-5" id="jumlah_peserta_container">
                                 <label for="jumlah_peserta" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Peserta <span class="text-red-500">*</span></label>
                                 <input type="number" name="jumlah_peserta" id="jumlah_peserta"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-base transition duration-150 ease-in-out
                                     @error('jumlah_peserta') border-red-500 @enderror"
-                                    value="{{ old('jumlah_peserta') }}" required min="1" placeholder="Masukkan jumlah peserta">
+                                    value="{{ old('jumlah_peserta', 1) }}" required min="1" placeholder="Masukkan jumlah peserta">
                                 @error('jumlah_peserta')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -125,7 +116,7 @@
                                 <input type="text" name="nama_pemesan" id="nama_pemesan"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
                                     @error('nama_pemesan') border-red-500 @enderror"
-                                    value="{{ old('nama_pemesan', $name) }}" required maxlength="255" placeholder="Nama lengkap Anda">
+                                    value="{{ old('nama_pemesan', $name ?? '') }}" required maxlength="255" placeholder="Nama lengkap Anda">
                                 @error('nama_pemesan')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -136,19 +127,8 @@
                                 <input type="email" name="email_pemesan" id="email_pemesan"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
                                     @error('email_pemesan') border-red-500 @enderror"
-                                    value="{{ old('email_pemesan', $email) }}" required maxlength="255" placeholder="alamatemail@contoh.com">
+                                    value="{{ old('email_pemesan', $email ?? '') }}" required maxlength="255" placeholder="alamatemail@contoh.com">
                                 @error('email_pemesan')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-5">
-                                <label for="telepon_pemesan" class="block text-sm font-medium text-gray-700 mb-1">Telepon Pemesan <span class="text-red-500">*</span></label>
-                                <input type="text" name="telepon_pemesan" id="telepon_pemesan"
-                                    class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
-                                    @error('telepon_pemesan') border-red-500 @enderror"
-                                    value="{{ old('telepon_pemesan') }}" required maxlength="20" placeholder="Contoh: 08123456789">
-                                @error('telepon_pemesan')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -167,10 +147,10 @@
                             @guest
                             <div class="mb-5">
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input type="password" name="password" id="password" rows="3"
+                                <input type="password" name="password" id="password"
                                     class="mt-1 block w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-base transition duration-150 ease-in-out
-                                    @error('alamat_pemesan') border-red-500 @enderror"
-                                    maxlength="500" placeholder="Password">{{ old('password') }}</input>
+                                    @error('password') border-red-500 @enderror"
+                                    maxlength="500" placeholder="Password">
                                 @error('password')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -225,41 +205,59 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const jadwalSelect = document.getElementById('jadwal_workshop_id');
-        const jenisPesertaRadios = document.querySelectorAll('input[name="jenis_peserta"]');
         const jumlahPesertaInput = document.getElementById('jumlah_peserta');
+        const jumlahPesertaContainer = document.getElementById('jumlah_peserta_container');
         const totalHargaDisplay = document.getElementById('total_harga_display');
         const totalHargaHidden = document.getElementById('total_harga_hidden');
+        const packageInfo = document.getElementById('package-info');
+        const packageInfoText = document.getElementById('package-info-text');
+
+        function toggleJumlahPesertaField() {
+            // Karena hanya kelompok, selalu tampilkan field jumlah peserta
+            jumlahPesertaContainer.style.display = 'block';
+            jumlahPesertaInput.setAttribute('required', 'required');
+            // Min akan di-set di calculateTotalPrice berdasarkan paket
+        }
 
         function calculateTotalPrice() {
             const selectedJadwalOption = jadwalSelect.options[jadwalSelect.selectedIndex];
+            const packageInfoDiv = document.getElementById('package-info');
+            const packageInfoText = document.getElementById('package-info-text');
             // Pastikan ada opsi yang terpilih sebelum mengakses dataset
             if (!selectedJadwalOption || selectedJadwalOption.value === "") {
                 totalHargaDisplay.value = 'Rp 0';
                 totalHargaHidden.value = 0;
+                jumlahPesertaInput.setAttribute('min', '1');
+                jumlahPesertaInput.setAttribute('max', '100');
                 jumlahPesertaInput.setCustomValidity(''); // Reset validasi
+                packageInfoDiv.classList.add('hidden');
                 return;
             }
 
-            const hargaIndividu = parseFloat(selectedJadwalOption.dataset.hargaIndividu || 0);
             const hargaKelompok = parseFloat(selectedJadwalOption.dataset.hargaKelompok || 0);
+            const minParticipants = parseInt(selectedJadwalOption.dataset.minParticipants || 1);
+            const maxParticipants = parseInt(selectedJadwalOption.dataset.maxParticipants || 100);
+            const durationDays = parseInt(selectedJadwalOption.dataset.durationDays || 1);
+            const maxReservationDays = parseInt(selectedJadwalOption.dataset.maxReservationDays || 1);
             const jumlahPeserta = parseInt(jumlahPesertaInput.value) || 0;
 
-            let hargaPerPeserta = 0;
-            let jenisPeserta = '';
+            // Display package info
+            const biaya = hargaKelompok.toLocaleString('id-ID');
+            const durasiWaktu = durationDays * 60;
+            const infoText = `Biaya ${biaya}/orang, waktu pelatihan ${durationDays} hari dengan durasi waktu maksimal ${durationDays}x60 menit, minimal pendaftaran ${minParticipants} orang. Dengan max pendaftaran h-${maxReservationDays} hari.`;
+            packageInfoText.innerHTML = infoText;
+            packageInfoDiv.classList.remove('hidden');
 
-            jenisPesertaRadios.forEach(radio => {
-                if (radio.checked) {
-                    jenisPeserta = radio.value;
-                }
-            });
+            // Set min dan max pada input
+            jumlahPesertaInput.setAttribute('min', minParticipants);
+            jumlahPesertaInput.setAttribute('max', maxParticipants);
 
-            if (jenisPeserta === 'individu') {
-                hargaPerPeserta = hargaIndividu;
-            } else if (jenisPeserta === 'kelompok') {
-                hargaPerPeserta = hargaKelompok;
+            // Jika value saat ini kurang dari min, set ke min
+            if (jumlahPeserta < minParticipants) {
+                jumlahPesertaInput.value = minParticipants;
             }
 
-            const totalPrice = hargaPerPeserta * jumlahPeserta;
+            const totalPrice = hargaKelompok * jumlahPeserta;
             totalHargaDisplay.value = 'Rp ' + totalPrice.toLocaleString('id-ID');
             totalHargaHidden.value = totalPrice;
 
@@ -280,10 +278,10 @@
 
         // Tambahkan event listener
         jadwalSelect.addEventListener('change', calculateTotalPrice);
-        jenisPesertaRadios.forEach(radio => radio.addEventListener('change', calculateTotalPrice));
         jumlahPesertaInput.addEventListener('input', calculateTotalPrice);
 
-        // Panggil saat halaman dimuat untuk inisialisasi nilai jika ada old() value
+        // Inisialisasi saat halaman dimuat
+        toggleJumlahPesertaField();
         calculateTotalPrice();
     });
 </script>

@@ -49,6 +49,9 @@
                 @if($reservasi->status_pembayaran === 'paid' && $reservasi->paid_at)
                     <p class="text-sm text-gray-500 mt-2">Dibayar pada: {{ \Carbon\Carbon::parse($reservasi->paid_at)->format('d M Y H:i') }}</p>
                 @endif
+                @if($reservasi->status_pembayaran === 'pending' && $reservasi->payment_deadline)
+                    <p class="text-sm text-orange-600 mt-2 font-medium">Batas pembayaran: {{ \Carbon\Carbon::parse($reservasi->payment_deadline)->format('d M Y H:i') }}</p>
+                @endif
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">

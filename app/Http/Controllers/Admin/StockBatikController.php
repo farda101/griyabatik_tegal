@@ -11,7 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage; // Untuk menyimpan QR Code
-use SimpleSoftwareIO\QrCode\Facades\QrCode; // Import QR Code Facade
+use chillerlan\QRCode\QRCode; // Import QR Code library
+use chillerlan\QRCode\QROptions; // Import QR Code options
+use chillerlan\QRCode\Output\QROutputInterface; // Import QR Output Interface
 use Carbon\Carbon; // Tambahkan ini jika Anda menggunakan Carbon di controller
 use App\Exports\StockBatikExport; // Tambahkan ini
 use Maatwebsite\Excel\Facades\Excel; // Tambahkan ini
@@ -88,10 +90,22 @@ public function index(Request $request)
                 'tanggal_masuk' => $stockBatik->tanggal_masuk->format('Y-m-d'),
             ]);
 
-            $qrCodeFileName = 'batik_' . $stockBatik->kode_batik . '.svg';
+            $qrCodeFileName = 'batik_' . $stockBatik->kode_batik . '.png';
             $qrCodePath = 'qr_codes/batik/' . $qrCodeFileName;
 
-            Storage::disk('public')->put($qrCodePath, QrCode::size(200)->format('svg')->generate($qrCodeData));
+            // Generate PNG format dengan error correction level high menggunakan chillerlan library
+            $options = new QROptions([
+                'version'      => QRCode::VERSION_AUTO,
+                'eccLevel'     => QRCode::ECC_H,
+                'outputType'   => QROutputInterface::GDIMAGE_PNG,
+                'imageBase64'  => false,
+                'scale'        => 10,
+            ]);
+            
+            $qrCode = new QRCode($options);
+            $qrCodeImage = $qrCode->render($qrCodeData);
+
+            Storage::disk('public')->put($qrCodePath, $qrCodeImage);
 
             $stockBatik->update(['qr_code' => $qrCodePath]);
 

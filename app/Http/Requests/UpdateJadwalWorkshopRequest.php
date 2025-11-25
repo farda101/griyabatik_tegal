@@ -33,7 +33,20 @@ class UpdateJadwalWorkshopRequest extends FormRequest
             'tanggal' => 'required|date|after_or_equal:today',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            'max_peserta' => 'required|integer|min:1|max:100',
+            'max_peserta' => [
+                'required',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    $paket = \App\Models\PaketWorkshop::find($this->paket_workshop_id);
+                    if ($paket && $value > $paket->max_peserta) {
+                        $fail("Maksimal peserta tidak boleh melebihi {$paket->max_peserta} untuk paket ini.");
+                    }
+                    if ($paket && $value < $paket->min_participants) {
+                        $fail("Minimal peserta harus {$paket->min_participants} untuk paket ini.");
+                    }
+                },
+            ],
             // Status bisa diubah secara manual jika diperlukan (misal: dari available ke unavailable)
             // Namun, logic 'full' akan diupdate oleh sistem berdasarkan peserta terdaftar.
             'status' => ['required', Rule::in(['available', 'unavailable', 'full'])],

@@ -16,40 +16,13 @@ class PengrajinController extends Controller
      * Display a listing of the resource.
      * Menampilkan daftar semua pengrajin.
      */
-public function index(Request $request)
-{
-    $query = Pengrajin::query();
+    public function index()
+    {
+        // Just get all pengrajins, no complex filtering needed
+        $pengrajins = Pengrajin::orderBy('nama_pengrajin', 'asc')->get();
 
-    // Search: nama atau kode pengrajin
-    if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nama_pengrajin', 'like', '%' . $request->search . '%')
-              ->orWhere('kode_pengrajin', 'like', '%' . $request->search . '%');
-        });
+        return view('admin.pengrajin.index', compact('pengrajins'));
     }
-
-    // Filter status aktif
-    if ($request->filled('status')) {
-        $query->where('is_active', $request->status);
-    }
-
-    // Sort
-    $sortBy = $request->get('sort_by', 'nama_pengrajin');
-    $sortOrder = $request->get('sort_order', 'asc');
-
-    // Validasi kolom sort
-    $allowedSortBy = ['nama_pengrajin', 'kode_pengrajin'];
-    if (!in_array($sortBy, $allowedSortBy)) {
-        $sortBy = 'nama_pengrajin';
-    }
-
-    // Validasi arah sort
-    $sortOrder = $sortOrder === 'desc' ? 'desc' : 'asc';
-
-    $pengrajins = $query->orderBy($sortBy, $sortOrder)->paginate(10);
-
-    return view('admin.pengrajin.index', compact('pengrajins'));
-}
     public function create()
     {
         return view('admin.pengrajin.create');
@@ -76,7 +49,6 @@ public function index(Request $request)
             // Flash message sukses
             Session::flash('success', 'Data pengrajin berhasil ditambahkan!');
             return redirect()->route('admin.pengrajin.index');
-
         } catch (\Exception $e) {
             // Log error untuk debugging
             Log::error('Gagal menyimpan pengrajin: ' . $e->getMessage(), ['exception' => $e]);
@@ -128,7 +100,6 @@ public function index(Request $request)
             // Flash message sukses
             Session::flash('success', 'Data pengrajin berhasil diperbarui!');
             return redirect()->route('admin.pengrajin.index');
-
         } catch (\Exception $e) {
             // Log error untuk debugging
             Log::error('Gagal memperbarui pengrajin: ' . $e->getMessage(), ['exception' => $e]);
@@ -152,7 +123,6 @@ public function index(Request $request)
             // Flash message sukses
             Session::flash('success', 'Pengrajin berhasil dihapus!');
             return redirect()->route('admin.pengrajin.index');
-
         } catch (\Exception $e) {
             // Log error
             Log::error('Gagal menghapus pengrajin: ' . $e->getMessage(), ['exception' => $e]);
@@ -179,7 +149,6 @@ public function index(Request $request)
             $status = $pengrajin->is_active ? 'aktif' : 'non-aktif';
             Session::flash('success', "Status pengrajin '{$pengrajin->nama_pengrajin}' berhasil diubah menjadi {$status}.");
             return redirect()->back();
-
         } catch (\Exception $e) {
             Log::error('Gagal mengubah status pengrajin: ' . $e->getMessage(), ['exception' => $e]);
             Session::flash('error', 'Terjadi kesalahan saat mengubah status pengrajin: ' . $e->getMessage());

@@ -29,7 +29,20 @@ class StoreJadwalWorkshopRequest extends FormRequest
             'tanggal' => 'required|date|after_or_equal:today', // Tanggal tidak boleh di masa lalu
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai', // Jam selesai harus setelah jam mulai
-            'max_peserta' => 'required|integer|min:1|max:100', // Sesuai dengan batasan di PaketWorkshop
+            'max_peserta' => [
+                'required',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    $paket = \App\Models\PaketWorkshop::find($this->paket_workshop_id);
+                    if ($paket && $value > $paket->max_peserta) {
+                        $fail("Maksimal peserta tidak boleh melebihi {$paket->max_peserta} untuk paket ini.");
+                    }
+                    if ($paket && $value < $paket->min_participants) {
+                        $fail("Minimal peserta harus {$paket->min_participants} untuk paket ini.");
+                    }
+                },
+            ],
             // Status akan diatur secara otomatis di controller/model
             'status' => ['required', Rule::in(['available', 'unavailable', 'full'])],
         ];

@@ -49,10 +49,29 @@
                         <p class="text-base text-gray-700 mt-4 leading-relaxed">
                             Reservasi Anda telah berhasil diajukan! Mohon segera lakukan pembayaran untuk mengkonfirmasi tempat Anda di workshop.
                         </p>
+                        
+                        {{-- Payment Deadline Warning --}}
+                        <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-yellow-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-yellow-800">Batas Waktu Pembayaran</h4>
+                                    <p class="text-yellow-700 mt-1">
+                                        Harap lakukan pembayaran sebelum: <strong>{{ $reservasi->payment_deadline->format('d M Y, H:i') }} WIB</strong>
+                                    </p>
+                                    <p class="text-sm text-yellow-600 mt-2">
+                                        Jika tidak dibayar dalam 24 jam, reservasi akan otomatis dibatalkan.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <a href="{{ route('reservasi.payment_instructions', ['reservasi' => $reservasi->id]) }}"
                            class="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition duration-300 shadow-lg">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h10M10 20H7a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v2M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h10M10 20H7a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v2M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2-2 0 012-2z"/>
                             </svg>
                             Lihat Instruksi Pembayaran
                         </a>

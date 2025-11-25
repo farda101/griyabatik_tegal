@@ -47,10 +47,6 @@
                         <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">{{ $penjualan->kasir->name ?? 'N/A' }}</dd>
                     </div>
                     <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                        <dt class="text-sm font-medium">Nama Pembeli</dt>
-                        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">{{ $penjualan->nama_pembeli }}</dd>
-                    </div>
-                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
                         <dt class="text-sm font-medium">Telepon Pembeli</dt>
                         <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">{{ $penjualan->telepon_pembeli ?? '-' }}</dd>
                     </div>

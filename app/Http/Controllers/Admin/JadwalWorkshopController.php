@@ -22,12 +22,10 @@ public function index(Request $request)
 {
     $query = \App\Models\JadwalWorkshop::with('paketWorkshop');
 
-    // Search by nama paket atau tanggal
+    // Search by nama paket
     if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->whereHas('paketWorkshop', function ($sub) use ($request) {
-                $sub->where('nama_paket', 'like', '%' . $request->search . '%');
-            })->orWhere('tanggal', 'like', '%' . $request->search . '%');
+        $query->whereHas('paketWorkshop', function ($sub) use ($request) {
+            $sub->where('nama_paket', 'like', '%' . $request->search . '%');
         });
     }
 
@@ -41,12 +39,13 @@ public function index(Request $request)
         $query->where('status', $request->status);
     }
 
-    // Sort
-    if ($request->filled('sort_by') && $request->filled('sort_order')) {
-        $query->orderBy($request->sort_by, $request->sort_order);
-    } else {
-        $query->orderBy('tanggal', 'asc');
+    // Filter by tanggal
+    if ($request->filled('tanggal')) {
+        $query->whereDate('tanggal', $request->tanggal);
     }
+
+    // Sort default: tanggal terbaru
+    $query->orderBy('tanggal', 'asc');
 
     $jadwalWorkshops = $query->paginate(10)->withQueryString();
     $paketList = \App\Models\PaketWorkshop::pluck('nama_paket', 'id');
@@ -61,7 +60,7 @@ public function index(Request $request)
     public function create()
     {
         // Ambil semua paket workshop yang aktif untuk dropdown
-        $paketWorkshops = PaketWorkshop::active()->get();
+        $paketWorkshops = PaketWorkshop::active()->get(['id', 'nama_paket', 'harga_individu', 'max_peserta', 'duration_days', 'durasi_menit', 'min_participants', 'max_reservation_days']);
         return view('admin.jadwal_workshop.create', compact('paketWorkshops'));
     }
 
@@ -123,7 +122,7 @@ public function index(Request $request)
     {
         // Route Model Binding otomatis mengambil jadwalWorkshop berdasarkan ID di URL
         // Ambil juga semua paket workshop yang aktif untuk dropdown
-        $paketWorkshops = PaketWorkshop::active()->get();
+        $paketWorkshops = PaketWorkshop::active()->get(['id', 'nama_paket', 'harga_individu', 'max_peserta', 'duration_days', 'durasi_menit', 'min_participants', 'max_reservation_days']);
         return view('admin.jadwal_workshop.edit', compact('jadwalWorkshop', 'paketWorkshops'));
     }
 

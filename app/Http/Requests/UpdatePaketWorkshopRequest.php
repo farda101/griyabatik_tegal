@@ -40,6 +40,9 @@ class UpdatePaketWorkshopRequest extends FormRequest
             'harga_kelompok' => 'required|numeric|min:0|max:99999999.99',
             'durasi_menit' => 'required|integer|min:30|max:1440',
             'max_peserta' => 'required|integer|min:1|max:100',
+            'min_participants' => 'required|integer|min:1|max:100',
+            'duration_days' => 'required|integer|min:1|max:30',
+            'max_reservation_days' => 'required|integer|min:1|max:30',
             'is_active' => 'boolean',
         ];
     }
@@ -72,6 +75,18 @@ class UpdatePaketWorkshopRequest extends FormRequest
             'max_peserta.integer' => 'Maksimal peserta harus berupa bilangan bulat.',
             'max_peserta.min' => 'Maksimal peserta minimal 1.',
             'max_peserta.max' => 'Maksimal peserta maksimal 100.',
+            'min_participants.required' => 'Minimal peserta wajib diisi.',
+            'min_participants.integer' => 'Minimal peserta harus berupa bilangan bulat.',
+            'min_participants.min' => 'Minimal peserta minimal 1.',
+            'min_participants.max' => 'Minimal peserta maksimal 100.',
+            'duration_days.required' => 'Durasi hari wajib diisi.',
+            'duration_days.integer' => 'Durasi hari harus berupa bilangan bulat.',
+            'duration_days.min' => 'Durasi hari minimal 1.',
+            'duration_days.max' => 'Durasi hari maksimal 30.',
+            'max_reservation_days.required' => 'Maksimal hari reservasi wajib diisi.',
+            'max_reservation_days.integer' => 'Maksimal hari reservasi harus berupa bilangan bulat.',
+            'max_reservation_days.min' => 'Maksimal hari reservasi minimal 1.',
+            'max_reservation_days.max' => 'Maksimal hari reservasi maksimal 30.',
             'is_active.boolean' => 'Status aktif tidak valid.',
         ];
     }

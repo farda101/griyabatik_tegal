@@ -69,35 +69,149 @@
                 </div>
             </div>
         @endif
-<form method="GET" class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-    {{-- Search --}}
-<input type="date" name="tanggal" value="{{ request('tanggal') }}"
-    class="form-input w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm" />
 
-    {{-- Filter Paket --}}
-    <select name="paket" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
-        <option value="">Semua Paket</option>
-        @foreach ($paketList as $id => $nama)
-            <option value="{{ $id }}" {{ request('paket') == $id ? 'selected' : '' }}>
-                {{ $nama }}
-            </option>
-        @endforeach
-    </select>
+        {{-- Filter dan Pencarian Section --}}
+        <div class="mb-8">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 flex items-center mb-2 sm:mb-0">
+                        <svg class="h-6 w-6 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                        </svg>
+                        Filter & Pencarian
+                    </h2>
+                    @if(request('search') || request('paket') || request('status') || request('tanggal'))
+                        <div class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-teal-100 border border-blue-300 rounded-lg">
+                            <svg class="h-5 w-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a1 1 0 011-1h8a1 1 0 011 1v2a1 1 0 11-2 0V8H7v1a1 1 0 11-2 0zm0 4a1 1 0 011-1h8a1 1 0 011 1v2a1 1 0 11-2 0v-1H7v1a1 1 0 11-2 0v-2z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-semibold text-blue-900">Filter Aktif</span>
+                        </div>
+                    @endif
+                </div>
 
-    {{-- Filter Status --}}
-    <select name="status" class="form-select w-full sm:w-48 border border-gray-300 rounded-lg shadow-sm">
-        <option value="">Semua Status</option>
-        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Tersedia</option>
-        <option value="full" {{ request('status') == 'full' ? 'selected' : '' }}>Penuh</option>
-        <option value="unavailable" {{ request('status') == 'unavailable' ? 'selected' : '' }}>Tidak Tersedia</option>
-    </select>
+                <form method="GET" action="{{ route('admin.jadwal_workshop.index') }}" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        {{-- Pencarian Nama Paket --}}
+                        <div>
+                            <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Cari Paket
+                            </label>
+                            <input 
+                                type="text" 
+                                id="search" 
+                                name="search" 
+                                value="{{ request('search') }}"
+                                placeholder="Nama paket..."
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            >
+                        </div>
 
+                        {{-- Filter Paket --}}
+                        <div>
+                            <label for="paket" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Paket Workshop
+                            </label>
+                            <select 
+                                id="paket"
+                                name="paket" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            >
+                                <option value="">Semua Paket</option>
+                                @foreach ($paketList as $id => $nama)
+                                    <option value="{{ $id }}" {{ request('paket') == $id ? 'selected' : '' }}>
+                                        {{ $nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Terapkan</button>
-</form>
+                        {{-- Filter Status --}}
+                        <div>
+                            <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Status
+                            </label>
+                            <select 
+                                id="status"
+                                name="status" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            >
+                                <option value="">Semua Status</option>
+                                <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Tersedia</option>
+                                <option value="full" {{ request('status') == 'full' ? 'selected' : '' }}>Penuh</option>
+                                <option value="unavailable" {{ request('status') == 'unavailable' ? 'selected' : '' }}>Tidak Tersedia</option>
+                            </select>
+                        </div>
+
+                        {{-- Filter Tanggal --}}
+                        <div>
+                            <label for="tanggal" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Tanggal
+                            </label>
+                            <input 
+                                type="date" 
+                                id="tanggal" 
+                                name="tanggal" 
+                                value="{{ request('tanggal') }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            >
+                        </div>
+
+                        {{-- Button Terapkan --}}
+                        <div class="flex items-end">
+                            <button 
+                                type="submit" 
+                                class="w-full px-6 py-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition duration-200">
+                                <svg class="h-5 w-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                Cari
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Reset Filter --}}
+                    @if(request('search') || request('paket') || request('status') || request('tanggal'))
+                        <div class="flex gap-2">
+                            <a 
+                                href="{{ route('admin.jadwal_workshop.index') }}" 
+                                class="px-6 py-2 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition duration-200 inline-flex items-center">
+                                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Reset Filter
+                            </a>
+                        </div>
+                    @endif
+                </form>
+            </div>
+        </div>
 
         {{-- Main Content Card --}}
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+            {{-- Data Summary --}}
+            <div class="mb-6 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                            <svg class="h-5 w-5 mr-2 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                            </svg>
+                            Total Jadwal: <span class="text-teal-600 ml-1">{{ $jadwalWorkshops->total() }} item</span>
+                        </h3>
+                    </div>
+                    @if(request('search') || request('paket') || request('status') || request('tanggal'))
+                        <div class="mt-3 sm:mt-0">
+                            <a href="{{ route('admin.jadwal_workshop.index') }}" class="inline-flex items-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border border-gray-300 transition duration-200">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Hapus Filter
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">

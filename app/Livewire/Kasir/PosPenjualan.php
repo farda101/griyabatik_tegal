@@ -23,8 +23,6 @@ class PosPenjualan extends Component
     public $qtyToAdd = 1;
 
     public $cart = [];
-    public $nama_pembeli = ''; // <--- Ubah dari $namaPembeli
-    public $telepon_pembeli = ''; // <--- Ubah dari $teleponPembeli
     public $total_bayar = 0; // <--- Ubah dari $totalBayar
     public $kembalian = 0;
     public $paymentStatusMessage = '';
@@ -166,7 +164,7 @@ class PosPenjualan extends Component
         try {
             // Kita tidak perlu lagi membuat $dataToValidate secara manual.
             // Livewire akan secara otomatis mengambil properti publik yang cocok dengan rules.
-            // Pastikan nama properti di Livewire ($nama_pembeli, $telepon_pembeli, $cart, $total_bayar)
+            // Pastikan nama properti di Livewire ($cart, $total_bayar)
             // cocok dengan nama rules di StorePenjualanRequest.
 
             // Dapatkan aturan dan pesan dari Form Request
@@ -174,7 +172,7 @@ class PosPenjualan extends Component
             $requestMessages = (new StorePenjualanRequest())->messages();
 
             // Panggil validasi langsung pada komponen Livewire.
-            // Livewire akan menggunakan properti publik komponen ($this->nama_pembeli, $this->telepon_pembeli, etc.)
+            // Livewire akan menggunakan properti publik komponen ($this->cart, etc.)
             $this->validate($requestRules, $requestMessages);
 
             // Setelah validasi, data yang tervalidasi bisa diakses langsung dari properti komponen
@@ -193,8 +191,6 @@ class PosPenjualan extends Component
             $penjualan = Penjualan::create([
                 'nomor_nota' => Penjualan::generateNomorNota(),
                 'kasir_id' => $kasirId,
-                'nama_pembeli' => $this->nama_pembeli ?? 'Anonim', // <--- Sesuaikan nama properti
-                'telepon_pembeli' => $this->telepon_pembeli ?? null, // <--- Sesuaikan nama properti
                 'total_harga' => $totalHargaFinal,
                 'total_bayar' => $this->total_bayar, // <--- Sesuaikan nama properti
                 'kembalian' => $kembalianFinal,
@@ -230,7 +226,7 @@ class PosPenjualan extends Component
 
             DB::commit();
 
-            $this->reset(['cart', 'nama_pembeli', 'telepon_pembeli', 'total_bayar', 'kembalian', 'searchBatik', 'qtyToAdd']); // <--- Sesuaikan nama properti
+            $this->reset(['cart', 'total_bayar', 'kembalian', 'searchBatik', 'qtyToAdd']); // <--- Sesuaikan nama properti
             $this->calculateTotals();
             Session::flash('success', 'Penjualan berhasil diproses! Nomor Nota: ' . $penjualan->nomor_nota);
 

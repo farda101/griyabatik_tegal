@@ -28,7 +28,7 @@ class StoreStockBatikRequest extends FormRequest
             // Kode batik akan di-auto-generate, jadi tidak perlu divalidasi dari input form
             'nama_batik' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:1000',
-            'motif' => 'nullable|string|max:100',
+            'motif' => 'nullable|string|max:100|in:Cempaka,Gribigan,Galaran,Beras Mawur,Mata Deruk,Tumbar Bolong,Kuku Macan,Semut Runtung,Benang Pedhot',
             'ukuran' => 'nullable|string|max:50',
             'harga_beli' => 'required|numeric|min:0|max:999999999.99', // Maksimal 999 juta
             'harga_jual' => 'required|numeric|min:0|max:999999999.99|gte:harga_beli', // Harga jual harus >= harga beli
@@ -51,6 +51,7 @@ class StoreStockBatikRequest extends FormRequest
             'nama_batik.max' => 'Nama batik maksimal 255 karakter.',
             'deskripsi.max' => 'Deskripsi maksimal 1000 karakter.',
             'motif.max' => 'Motif maksimal 100 karakter.',
+            'motif.in' => 'Motif harus salah satu dari: Cempaka, Gribigan, Galaran, Beras Mawur, Mata Deruk, Tumbar Bolong, Kuku Macan, Semut Runtung, Benang Pedhot.',
             'ukuran.max' => 'Ukuran maksimal 50 karakter.',
             'harga_beli.required' => 'Harga beli wajib diisi.',
             'harga_beli.numeric' => 'Harga beli harus berupa angka.',

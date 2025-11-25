@@ -24,12 +24,11 @@ class KasirPenjualanExport implements FromCollection, WithHeadings, WithMapping,
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
-        $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik'])
-                            ->where('kasir_id', $this->kasirId); // Filter berdasarkan ID kasir
+        $query = Penjualan::with(['kasir', 'detailPenjualans.stockBatik']);
 
         if ($this->startDate) {
             $query->whereDate('tanggal_penjualan', '>=', $this->startDate);
@@ -52,7 +51,6 @@ class KasirPenjualanExport implements FromCollection, WithHeadings, WithMapping,
             'Nomor Nota',
             'Tanggal Penjualan',
             'Kasir',
-            'Nama Pembeli',
             'Telepon Pembeli',
             'Total Harga',
             'Total Dibayar',
@@ -89,7 +87,6 @@ class KasirPenjualanExport implements FromCollection, WithHeadings, WithMapping,
             $penjualan->nomor_nota,
             $penjualan->tanggal_penjualan->format('Y-m-d H:i:s'),
             $penjualan->kasir->name ?? 'N/A',
-            $penjualan->nama_pembeli,
             $penjualan->telepon_pembeli ?? '-',
             number_format($penjualan->total_harga, 0, ',', '.'),
             number_format($penjualan->total_bayar, 0, ',', '.'),
